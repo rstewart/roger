@@ -1,4 +1,4 @@
-package com.shopwiki.roger;
+package com.shopwiki.messaging;
 
 import java.io.IOException;
 import java.util.*;
@@ -6,7 +6,7 @@ import java.util.concurrent.*;
 
 import com.google.common.collect.ImmutableList;
 import com.rabbitmq.client.*;
-import com.shopwiki.roger.util.DaemonThreadFactory;
+import com.shopwiki.messaging.util.DaemonThreadFactory;
 
 /**
  * @owner rstewart

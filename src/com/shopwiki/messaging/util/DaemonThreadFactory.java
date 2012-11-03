@@ -1,4 +1,4 @@
-package com.shopwiki.roger.util;
+package com.shopwiki.messaging.util;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;

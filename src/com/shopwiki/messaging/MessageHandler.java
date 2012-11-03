@@ -1,4 +1,4 @@
-package com.shopwiki.roger;
+package com.shopwiki.messaging;
 
 import org.codehaus.jackson.type.TypeReference;
 

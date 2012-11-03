@@ -1,9 +1,9 @@
-package com.shopwiki.roger;
+package com.shopwiki.messaging;
 
 import java.io.IOException;
 
 import com.rabbitmq.client.*;
-import com.shopwiki.roger.MessagingReconnector.*;
+import com.shopwiki.messaging.MessagingReconnector.*;
 
 /**
  * @owner rstewart

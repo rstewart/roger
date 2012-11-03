@@ -1,4 +1,4 @@
-package com.shopwiki.roger;
+package com.shopwiki.messaging;
 
 /**
  * @owner rstewart
