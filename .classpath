@@ -2,5 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/rob/shopwiki/include/rabbitmq-client.jar"/>
+	<classpathentry kind="lib" path="/Users/rob/shopwiki/include/jackson-core-asl-1.7.9.jar"/>
+	<classpathentry kind="lib" path="/Users/rob/shopwiki/include/jackson-mapper-asl-1.7.9.jar"/>
+	<classpathentry kind="lib" path="/Users/rob/shopwiki/include/guava-11.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
