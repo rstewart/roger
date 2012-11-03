@@ -12,7 +12,7 @@ public interface MessageHandler<T> {
     // TODO: WHY doesn't this work ???
     //private final TypeReference<T> typeRef = new TypeReference<T>() { };
     // ...oh Well, make them implement one more method.
-    public TypeReference<T> getMessageType();
+    TypeReference<T> getMessageType();
 
-    public void handleMessage(T message, BasicProperties properties);
+    void handleMessage(T message, BasicProperties properties);
 }

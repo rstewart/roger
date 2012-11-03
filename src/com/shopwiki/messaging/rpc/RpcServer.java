@@ -12,12 +12,12 @@ import com.shopwiki.messaging.MessagingReconnector.*;
 public class RpcServer {
 
     public interface WorkerFactory {
-        public RpcWorkers createWorkers(String queuePrefix) throws IOException;
+        RpcWorkers createWorkers(String queuePrefix) throws IOException;
     }
 
     public static interface QueueDeclarator {
-        public void declareQueue(Channel channel, RpcWorker worker) throws IOException;
-        public void bindQueue(Channel channel, RpcWorker worker) throws IOException;
+        void declareQueue(Channel channel, RpcWorker worker) throws IOException;
+        void bindQueue(Channel channel, RpcWorker worker) throws IOException;
     }
 
     private final WorkerFactory workerFactory;
