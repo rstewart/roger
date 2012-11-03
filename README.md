@@ -1,4 +1,5 @@
 roger
 =====
 
-Java RPC Framework using RabbitMQ &amp; Jackson
+Java RPC Framework using RabbitMQ & Jackson
+
