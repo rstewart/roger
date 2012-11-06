@@ -72,7 +72,7 @@ public class MessagingUtil {
         props = props.contentType("application/json");
         props = props.timestamp(new Date());
         if (DEBUG) {
-            System.out.println("*** RabbitMQUtil SENDING MESSAGE ***");
+            System.out.println("*** MessagingUtil SENDING MESSAGE ***");
             System.out.println("*** routingKey: " + routingKey);
             System.out.println("*** props:\n" + prettyPrint(props.build()));
             System.out.println("*** message: " + prettyPrintMessage(message));
