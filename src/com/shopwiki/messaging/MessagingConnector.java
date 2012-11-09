@@ -69,9 +69,18 @@ public class MessagingConnector {
     private Connection _getConnection(int numThreads) throws IOException {
         ConnectionFactory connFactory = new ConnectionFactory();
         ThreadFactory threadFactory = DaemonThreadFactory.getInstance("RabbitMQ-ConsumerThread", true);
-        ExecutorService executor = Executors.newFixedThreadPool(numThreads, threadFactory);
+        final ExecutorService executor = Executors.newFixedThreadPool(numThreads, threadFactory);
         Address[] array = addresses.toArray(new Address[0]);
-        return connFactory.newConnection(executor, array);
+        Connection conn = connFactory.newConnection(executor, array);
+
+        conn.addShutdownListener(new ShutdownListener() {
+			@Override
+			public void shutdownCompleted(ShutdownSignalException sse) {
+				executor.shutdown();
+			}
+        });
+
+        return conn;
     }
 
     public static void closeConnection(Connection conn) {
