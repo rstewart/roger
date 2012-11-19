@@ -26,6 +26,10 @@ public class BasicWorkerFactory implements WorkerFactory {
         nameToHandler.put(name, handler);
     }
 
+    public Map<String, RequestHandler<?,?>> getHandlerMap() {
+        return Collections.unmodifiableMap(nameToHandler);
+    }
+
     @Override
     public RpcWorkers createWorkers(String queuePrefix) throws IOException {
         Connection conn = connector.getConnection(numThreads);
