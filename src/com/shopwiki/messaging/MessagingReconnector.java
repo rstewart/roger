@@ -1,6 +1,7 @@
 package com.shopwiki.messaging;
 
 import com.rabbitmq.client.*;
+import com.shopwiki.messaging.util.TimeUtil;
 
 /**
  * @owner rstewart
@@ -32,7 +33,7 @@ public class MessagingReconnector implements ShutdownListener, Runnable {
 
     @Override
     public void shutdownCompleted(ShutdownSignalException cause) {
-        System.err.println("RabbitMQ connection SHUTDOWN!");
+        System.err.println(TimeUtil.now() + " RabbitMQ connection SHUTDOWN!");
         System.err.print("CAUSE: ");
         cause.printStackTrace();
         run();
@@ -40,14 +41,14 @@ public class MessagingReconnector implements ShutdownListener, Runnable {
 
     @Override
     public void run() {
-        System.err.println("Attempting to reconnect to RabbitMQ...");
+        System.err.println(TimeUtil.now() + " Attempting to reconnect to RabbitMQ...");
         int attempt = 0;
 
         while (true) {
             attempt++;
             try {
                 if (handler.reconnect()) {
-                    System.err.println("RabbitMQ reconnect # " + attempt + " SUCCEEDED!");
+                    System.err.println(TimeUtil.now() + " RabbitMQ reconnect # " + attempt + " SUCCEEDED!");
                     return;
                 }
             } catch (Throwable e) {
@@ -57,7 +58,7 @@ public class MessagingReconnector implements ShutdownListener, Runnable {
             if (logger != null) {
                 logger.log(attempt);
             }
-            System.err.println("RabbitMQ reconnect # " + attempt + " FAILED!  Retrying in " + secondsBeforeRetry + " seconds...");
+            System.err.println(TimeUtil.now() + " RabbitMQ reconnect # " + attempt + " FAILED!  Retrying in " + secondsBeforeRetry + " seconds...");
             try {
                 Thread.sleep(secondsBeforeRetry * 1000);
             } catch (InterruptedException e) {
