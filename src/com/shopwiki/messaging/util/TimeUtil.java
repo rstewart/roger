@@ -18,7 +18,7 @@ public class TimeUtil {
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			format.setTimeZone(NY_TIMEZONE);
 			return format;
-		};
+		}
 	};
 
 	public static String format(Date date) {
