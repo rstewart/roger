@@ -23,10 +23,10 @@ public class MessagingConnector {
         this.addresses = ImmutableList.copyOf(addresses);
     }
 
-    private class ConnectHackDaemon extends Thread {
+    private class ConnectDaemon extends Thread {
         private final int numThreads;
 
-        public ConnectHackDaemon(int numThreads) {
+        public ConnectDaemon(int numThreads) {
             this.numThreads = numThreads;
         }
 
@@ -44,13 +44,13 @@ public class MessagingConnector {
 
         @Override
         public synchronized void start() {
-            setDaemon( true );
+            setDaemon(true);
             super.start();
         }
     }
 
     public Connection getConnection(final int numThreads) throws IOException {
-        ConnectHackDaemon tempThread = new ConnectHackDaemon(numThreads);
+        ConnectDaemon tempThread = new ConnectDaemon(numThreads);
         tempThread.start();
         try {
             tempThread.join();
