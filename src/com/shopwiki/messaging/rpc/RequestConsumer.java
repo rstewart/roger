@@ -55,14 +55,15 @@ public class RequestConsumer<I> extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties requestProps, byte[] body) throws IOException {
 
-        long startTime = System.currentTimeMillis();
-
         I request = null;
         ResponseStatus status = null;
         Object response = null;
         Throwable thrown = null;
+        long timeTaken = -1;
 
         try {
+            long startTime = System.currentTimeMillis();
+
             try {
                 request = MessagingUtil.getDeliveryBody(body, requestType);
             } catch (Exception e) {
@@ -99,6 +100,8 @@ public class RequestConsumer<I> extends DefaultConsumer {
                 }
             }
 
+            timeTaken = System.currentTimeMillis() - startTime;
+
             // Ack before or after the reply is sent ???
             channel.basicAck(envelope.getDeliveryTag(), false);
 
@@ -108,7 +111,7 @@ public class RequestConsumer<I> extends DefaultConsumer {
             if (correlationId != null && replyTo != null) {
                 Map<String,Object> headers = new LinkedHashMap<String,Object>();
                 headers.put("status", String.valueOf(status));
-                headers.put("handler_time_millis", String.valueOf(System.currentTimeMillis() - startTime));
+                headers.put("handler_time_millis", String.valueOf(timeTaken));
                 headers.put("hostname", hostname);
 
                 BasicProperties.Builder replyProps = new BasicProperties.Builder();
@@ -122,7 +125,7 @@ public class RequestConsumer<I> extends DefaultConsumer {
             thrown = e;
         } finally {
             if (pps != null) {
-                pps.process(queueName, status, request, response, thrown);
+                pps.process(queueName, status, request, response, thrown, timeTaken);
             }
         }
     }
