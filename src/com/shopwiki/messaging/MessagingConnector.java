@@ -41,7 +41,7 @@ public class MessagingConnector {
                 ioe = e;
             }
         }
-        
+
         @Override
         public synchronized void start() {
             setDaemon( true );
@@ -66,6 +66,12 @@ public class MessagingConnector {
         return tempThread.conn;
     }
 
+    public Connection getLongConnection(int numThreads) throws IOException {
+        Connection conn = _getConnection(numThreads);
+        if (MessagingUtil.DEBUG) { System.out.println("*** Connected to RabbitMQ: " + conn); }
+        return conn;
+    }
+
     private Connection _getConnection(int numThreads) throws IOException {
         ConnectionFactory connFactory = new ConnectionFactory();
         ThreadFactory threadFactory = DaemonThreadFactory.getInstance("RabbitMQ-ConsumerThread", true);
@@ -74,10 +80,10 @@ public class MessagingConnector {
         Connection conn = connFactory.newConnection(executor, array);
 
         conn.addShutdownListener(new ShutdownListener() {
-			@Override
-			public void shutdownCompleted(ShutdownSignalException sse) {
-				executor.shutdown();
-			}
+            @Override
+            public void shutdownCompleted(ShutdownSignalException sse) {
+                executor.shutdown();
+            }
         });
 
         return conn;
