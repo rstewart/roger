@@ -13,7 +13,7 @@ import com.shopwiki.messaging.rpc.RpcServer;
  */
 public class HelloWorldRpcServer {
 
-    private static final Address address = new Address("rabbitmq.ny.shopwiki.com");
+    private static final Address address = new Address("localhost");
     public static final MessagingConnector connector = new MessagingConnector(address);
 
     public static void main(String[] args) throws Exception {
