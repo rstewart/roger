@@ -37,13 +37,19 @@ public class MessagingUtil {
 
     private static final Charset UTF_8 = Charset.forName("utf-8");
 
-    /* Same as ChannelN.queueDeclare() */
+    /**
+     * Used by RpcClients.
+     * Same as ChannelN.queueDeclare()
+     */
     public static DeclareOk declareAnonymousQueue(Channel channel) throws IOException {
         final String queueName = "";
         final boolean exclusive = true;
         return declareTempQueue(channel, queueName, exclusive);
     }
 
+    /**
+     * Used by temporary (i.e. test) RpcServers
+     */
     public static DeclareOk declareTempQueue(Channel channel, String queueName, boolean exclusive) throws IOException {
         final boolean durable = false;
         final boolean autoDelete = true;
@@ -51,8 +57,11 @@ public class MessagingUtil {
         return declareQueue(channel, queueName, durable, exclusive, autoDelete, args);
     }
 
+    /**
+     * Used by permanent (i.e. production) RpcServers
+     */
     public static DeclareOk declareNamedQueue(Channel channel, String queueName) throws IOException {
-        final boolean durable = true;
+        final boolean durable = true; // TODO: make configurable
         final boolean exclusive = false;
         final boolean autoDelete = false;
         Map<String,Object> args = new HashMap<String,Object>();
@@ -63,7 +72,7 @@ public class MessagingUtil {
     private static DeclareOk declareQueue(Channel channel, String queueName, boolean durable, boolean exclusive, boolean autoDelete, Map<String,Object> args) throws IOException {
         // Set the message TTL for all queues created
         // http://www.rabbitmq.com/extensions.html#lifetimes
-        args.put("x-message-ttl", TimeUnit.HOURS.toSeconds(1));
+        args.put("x-message-ttl", TimeUnit.HOURS.toSeconds(1)); // FIXME: Don't always want TTL !!!
         return channel.queueDeclare(queueName, durable, exclusive, autoDelete, args);
     }
 
