@@ -27,7 +27,7 @@ import com.shopwiki.roger.rpc.RpcServer;
 /**
  * @owner rstewart
  */
-public class HelloWorldRpcServer {
+public class ExampleRpcServer {
 
     private static final Address address = new Address("localhost");
     public static final MessagingConnector connector = new MessagingConnector(address);
@@ -51,7 +51,7 @@ public class HelloWorldRpcServer {
         BasicWorkerFactory factory = new BasicWorkerFactory(connector, 2);
         factory.addHandler("HelloWorld", handler);
 
-        RpcServer server = new RpcServer(factory, "");
+        RpcServer server = new RpcServer(factory, "Example-Server");
         server.start();
     }
 }

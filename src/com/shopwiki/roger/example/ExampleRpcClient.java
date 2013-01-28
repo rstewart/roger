@@ -27,10 +27,10 @@ import com.shopwiki.roger.rpc.RpcResponse;
 /**
  * @author Rob
  */
-public class HelloWorldRpcClient {
+public class ExampleRpcClient {
 
     public static void main(String[] args) throws Exception {
-        Connection conn = HelloWorldRpcServer.connector.getConnection(1);
+        Connection conn = ExampleRpcServer.connector.getConnection(1);
         Channel channel = conn.createChannel();
         Route route = new Route("", "HelloWorld");
         RpcClient client = new RpcClient(channel, route, false);
