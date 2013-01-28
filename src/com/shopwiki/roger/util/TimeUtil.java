@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.util;
+package com.shopwiki.roger.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

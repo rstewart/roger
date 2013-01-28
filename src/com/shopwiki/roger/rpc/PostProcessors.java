@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.rpc;
+package com.shopwiki.roger.rpc;
 
 import java.util.*;
 import java.util.concurrent.*;

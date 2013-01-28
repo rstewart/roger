@@ -14,34 +14,18 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.rpc;
-
-import java.util.*;
-
-import com.rabbitmq.client.Connection;
+package com.shopwiki.roger;
 
 /**
  * @owner rstewart
  */
-public class RpcWorkers implements Iterable<RpcWorker> {
+public class Route {
 
-    private final Connection conn;
-    private final List<RpcWorker> list = new ArrayList<RpcWorker>();
+    public final String exchange;
+    public final String key;
 
-    public RpcWorkers(Connection conn) {
-        this.conn = conn;
-    }
-
-    public Connection getConnection() {
-        return conn;
-    }
-
-    public void add(RpcWorker worker) {
-        list.add(worker);
-    }
-
-    @Override
-    public Iterator<RpcWorker> iterator() {
-        return list.iterator();
+    public Route(String exchange, String key) {
+        this.exchange = exchange;
+        this.key = key;
     }
 }

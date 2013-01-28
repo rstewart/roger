@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.rpc;
+package com.shopwiki.roger.rpc;
 
 import java.io.IOException;
 import java.util.*;
@@ -25,7 +25,7 @@ import org.codehaus.jackson.type.TypeReference;
 import com.google.common.util.concurrent.AbstractFuture;
 import com.rabbitmq.client.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
-import com.shopwiki.messaging.*;
+import com.shopwiki.roger.*;
 
 /**
  * @owner rstewart

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.example;
+package com.shopwiki.roger.example;
 
 import java.util.concurrent.Future;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.shopwiki.messaging.Route;
-import com.shopwiki.messaging.rpc.RpcClient;
-import com.shopwiki.messaging.rpc.RpcResponse;
+import com.shopwiki.roger.Route;
+import com.shopwiki.roger.rpc.RpcClient;
+import com.shopwiki.roger.rpc.RpcResponse;
 
 /**
  * @author Rob

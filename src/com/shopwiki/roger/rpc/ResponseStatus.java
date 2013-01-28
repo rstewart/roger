@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging;
-
-import org.codehaus.jackson.annotate.*;
+package com.shopwiki.roger.rpc;
 
 /**
  * @owner rstewart
  */
-public abstract class AbstractMessage {
+public enum ResponseStatus {
+    OK,
+    MALFORMED_REQUEST, // An Exception was thrown while attempting deserialize the request from JSON into a Java Object
+    INVALID_REQUEST, // The RequestHandler threw an IllegalArgumentException
+    HANDLER_ERROR, // The RequestHandler threw an Exception
 
-    @Override
-    public String toString() {
-        return MessagingUtil.prettyPrintMessage(this);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown=true)
-    public static abstract class NonStrictJsonMessage extends AbstractMessage { }
+    // never returned, only for logging
+    NACK,
+    NUCLEAR,
+    ;
 }

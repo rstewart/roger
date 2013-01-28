@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.rpc;
+package com.shopwiki.roger;
 
 import org.codehaus.jackson.type.TypeReference;
+
+import com.rabbitmq.client.AMQP.BasicProperties;
 
 /**
  * @owner rstewart
  */
-public interface RequestHandler<I,O> {
+public interface MessageHandler<T> {
 
     // TODO: WHY doesn't this work ???
     //private final TypeReference<T> typeRef = new TypeReference<T>() { };
     // ...oh Well, make them implement one more method.
-    TypeReference<I> getRequestType();
+    TypeReference<T> getMessageType();
 
-    O handleRequest(I request) throws Exception;
+    void handleMessage(T message, BasicProperties properties);
 }

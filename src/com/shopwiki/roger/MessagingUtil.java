@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging;
+package com.shopwiki.roger;
 
 import java.io.*;
 import java.nio.charset.Charset;

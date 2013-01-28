@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.rpc;
+package com.shopwiki.roger.rpc;
+
+import org.codehaus.jackson.type.TypeReference;
 
 /**
  * @owner rstewart
  */
-public class NackException extends Exception {
+public interface RequestHandler<I,O> {
 
-    private static final long serialVersionUID = 3609423674773742315L;
+    // TODO: WHY doesn't this work ???
+    //private final TypeReference<T> typeRef = new TypeReference<T>() { };
+    // ...oh Well, make them implement one more method.
+    TypeReference<I> getRequestType();
 
-    public NackException(String message) {
-        super(message);
-    }
-
-    public NackException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    O handleRequest(I request) throws Exception;
 }

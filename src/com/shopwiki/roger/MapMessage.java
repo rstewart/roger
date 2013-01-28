@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging;
+package com.shopwiki.roger;
 
 import java.util.LinkedHashMap;
 

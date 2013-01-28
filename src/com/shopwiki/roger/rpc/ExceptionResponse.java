@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.rpc;
+package com.shopwiki.roger.rpc;
 
 import java.util.*;
 
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.shopwiki.messaging.*;
+import com.shopwiki.roger.*;
 
 /**
  * @owner rstewart

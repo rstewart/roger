@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.example;
+package com.shopwiki.roger.example;
 
 import org.codehaus.jackson.type.TypeReference;
 
 import com.rabbitmq.client.Address;
-import com.shopwiki.messaging.*;
-import com.shopwiki.messaging.rpc.BasicWorkerFactory;
-import com.shopwiki.messaging.rpc.RequestHandler;
-import com.shopwiki.messaging.rpc.RpcServer;
+import com.shopwiki.roger.*;
+import com.shopwiki.roger.rpc.BasicWorkerFactory;
+import com.shopwiki.roger.rpc.RequestHandler;
+import com.shopwiki.roger.rpc.RpcServer;
 
 /**
  * @owner rstewart

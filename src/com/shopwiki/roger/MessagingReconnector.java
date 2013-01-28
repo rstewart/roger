@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging;
+package com.shopwiki.roger;
 
 import com.rabbitmq.client.*;
-import com.shopwiki.messaging.util.TimeUtil;
+import com.shopwiki.roger.util.TimeUtil;
 
 /**
  * @owner rstewart

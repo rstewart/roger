@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging;
+package com.shopwiki.roger;
 
 import java.io.IOException;
 import java.util.*;
@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 
 import com.google.common.collect.ImmutableList;
 import com.rabbitmq.client.*;
-import com.shopwiki.messaging.util.DaemonThreadFactory;
+import com.shopwiki.roger.util.DaemonThreadFactory;
 
 /**
  * @owner rstewart

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging.rpc;
+package com.shopwiki.roger.rpc;
 
 import java.util.*;
 
 import com.google.common.collect.Maps;
 import com.rabbitmq.client.AMQP.BasicProperties;
-import com.shopwiki.messaging.*;
+import com.shopwiki.roger.*;
 
 /**
  * Only used by the RpcClient

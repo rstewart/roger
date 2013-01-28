@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging;
-
-import org.codehaus.jackson.type.TypeReference;
-
-import com.rabbitmq.client.AMQP.BasicProperties;
+package com.shopwiki.roger.rpc;
 
 /**
  * @owner rstewart
  */
-public interface MessageHandler<T> {
+public class NackException extends Exception {
 
-    // TODO: WHY doesn't this work ???
-    //private final TypeReference<T> typeRef = new TypeReference<T>() { };
-    // ...oh Well, make them implement one more method.
-    TypeReference<T> getMessageType();
+    private static final long serialVersionUID = 3609423674773742315L;
 
-    void handleMessage(T message, BasicProperties properties);
+    public NackException(String message) {
+        super(message);
+    }
+
+    public NackException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

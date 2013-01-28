@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.shopwiki.messaging;
+package com.shopwiki.roger;
 
 import java.io.IOException;
 
 import com.rabbitmq.client.*;
-import com.shopwiki.messaging.MessagingReconnector.*;
+import com.shopwiki.roger.MessagingReconnector.*;
 
 /**
  * @owner rstewart
