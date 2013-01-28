@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="/Users/rob/shopwiki/include/jackson-core-asl-1.7.9.jar"/>
 	<classpathentry kind="lib" path="/Users/rob/shopwiki/include/jackson-mapper-asl-1.7.9.jar"/>
 	<classpathentry kind="lib" path="/Users/rob/shopwiki/include/guava-11.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/rob/shopwiki/include/commons-io-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
