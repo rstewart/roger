@@ -31,6 +31,7 @@ public class RpcServer {
         RpcWorkers createWorkers(String queuePrefix) throws IOException;
     }
 
+    // TODO: Rename this QueueManager ???
     public static interface QueueDeclarator {
         void declareQueue(Channel channel, RpcWorker worker) throws IOException;
         void bindQueue(Channel channel, RpcWorker worker) throws IOException;

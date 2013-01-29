@@ -16,6 +16,7 @@
 
 package com.shopwiki.roger.example;
 
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import com.rabbitmq.client.Channel;
@@ -33,7 +34,8 @@ public class ExampleRpcClient {
         Connection conn = ExampleRpcServer.connector.getConnection(1);
         Channel channel = conn.createChannel();
         Route route = new Route("", "HelloWorld");
-        RpcClient client = new RpcClient(channel, route, false);
+        Map<String,Object> queueArgs = null;
+        RpcClient client = new RpcClient(channel, route, queueArgs, false);
         Future<RpcResponse> future = client.sendRequest("Robert");
         RpcResponse response = future.get();
         System.out.println("HEADERS:\n" + response.getHeaders());

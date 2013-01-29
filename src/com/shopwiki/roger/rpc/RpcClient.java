@@ -40,13 +40,13 @@ public class RpcClient {
 
     private final Map<String,RpcFuture> idToFuture = new ConcurrentHashMap<String,RpcFuture>();
 
-    public RpcClient(Channel channel, Route requestRoute, boolean exceptionsAsJson) throws IOException {
+    public RpcClient(Channel channel, Route requestRoute, Map<String,Object> responseQueueArgs, boolean exceptionsAsJson) throws IOException {
         this.channel = channel;
         this.requestRoute = requestRoute;
         this.exceptionsAsJson = exceptionsAsJson;
 
         ResponseHandler handler = new ResponseHandler();
-        responseConsumer = new MessageConsumer<MapMessage>(handler, channel, null);
+        responseConsumer = new MessageConsumer<MapMessage>(handler, channel, responseQueueArgs, null);
         responseConsumer.start();
     }
 

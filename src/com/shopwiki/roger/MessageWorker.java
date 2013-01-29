@@ -17,6 +17,7 @@
 package com.shopwiki.roger;
 
 import java.io.IOException;
+import java.util.Map;
 
 import com.rabbitmq.client.*;
 import com.shopwiki.roger.MessagingReconnector.*;
@@ -28,12 +29,14 @@ public class MessageWorker<T> {
 
     private final MessagingConnector connector;
     private final MessageHandler<T> handler;
+    private final Map<String,Object> queueArgs;
     private final Route route;
     public final MessagingReconnector reconnector;
 
-    public MessageWorker(MessagingConnector connector, MessageHandler<T> handler, Route route, ReconnectLogger reconnectLogger) {
+    public MessageWorker(MessagingConnector connector, MessageHandler<T> handler, Map<String,Object> queueArgs, Route route, ReconnectLogger reconnectLogger) {
         this.connector = connector;
         this.handler = handler;
+        this.queueArgs = queueArgs;
         this.route = route;
 
         ReconnectHandler reconnectHandler = new ReconnectHandler() {
@@ -54,7 +57,7 @@ public class MessageWorker<T> {
         conn.addShutdownListener(reconnector);
         channel = conn.createChannel();
 
-        MessageConsumer<T> consumer = new MessageConsumer<T>(handler, channel, route);
+        MessageConsumer<T> consumer = new MessageConsumer<T>(handler, channel, queueArgs, route);
         consumer.start();
     }
 

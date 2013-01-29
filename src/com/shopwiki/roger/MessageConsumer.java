@@ -17,6 +17,7 @@
 package com.shopwiki.roger;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.codehaus.jackson.type.TypeReference;
 
@@ -36,13 +37,13 @@ public class MessageConsumer<T> extends DefaultConsumer {
     private final Route route;
     private final String queueName;
 
-    public MessageConsumer(MessageHandler<T> handler, Channel channel, Route route) throws IOException {
+    public MessageConsumer(MessageHandler<T> handler, Channel channel, Map<String,Object> queueArgs, Route route) throws IOException {
         super(channel);
         this.handler = handler;
         this.messageType = handler.getMessageType();
         this.channel = channel;
         this.route = route;
-        this.queueName = MessagingUtil.declareAnonymousQueue(channel).getQueue();
+        this.queueName = QueueUtil.declareAnonymousQueue(channel, queueArgs).getQueue();
     }
 
     public String getQueueName() {

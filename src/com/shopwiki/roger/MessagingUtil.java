@@ -19,62 +19,24 @@ package com.shopwiki.roger;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import org.codehaus.jackson.map.*;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
-import com.rabbitmq.client.AMQP.Queue.DeclareOk;
 
 /**
  * @owner rstewart
  */
 public class MessagingUtil {
 
-    public static final boolean DEBUG = Boolean.getBoolean("DEBUG.MESSAGING");
+    public static final boolean DEBUG = Boolean.getBoolean("ROGER.DEBUG");
 
     private static final Charset UTF_8 = Charset.forName("utf-8");
 
-    /**
-     * Used by RpcClients.
-     * Same as ChannelN.queueDeclare()
-     */
-    public static DeclareOk declareAnonymousQueue(Channel channel) throws IOException {
-        final String queueName = "";
-        final boolean exclusive = true;
-        return declareTempQueue(channel, queueName, exclusive);
-    }
-
-    /**
-     * Used by temporary (i.e. test) RpcServers
-     */
-    public static DeclareOk declareTempQueue(Channel channel, String queueName, boolean exclusive) throws IOException {
-        final boolean durable = false;
-        final boolean autoDelete = true;
-        Map<String,Object> args = new HashMap<String,Object>();
-        return declareQueue(channel, queueName, durable, exclusive, autoDelete, args);
-    }
-
-    /**
-     * Used by permanent (i.e. production) RpcServers
-     */
-    public static DeclareOk declareNamedQueue(Channel channel, String queueName) throws IOException {
-        final boolean durable = true; // TODO: make configurable
-        final boolean exclusive = false;
-        final boolean autoDelete = false;
-        Map<String,Object> args = new HashMap<String,Object>();
-        args.put("x-ha-policy", "all"); // replicate the queue to all slaves
-        return declareQueue(channel, queueName, durable, exclusive, autoDelete, args);
-    }
-
-    private static DeclareOk declareQueue(Channel channel, String queueName, boolean durable, boolean exclusive, boolean autoDelete, Map<String,Object> args) throws IOException {
-        // Set the message TTL for all queues created
-        // http://www.rabbitmq.com/extensions.html#lifetimes
-        args.put("x-message-ttl", TimeUnit.HOURS.toSeconds(1)); // FIXME: Don't always want TTL !!!
-        return channel.queueDeclare(queueName, durable, exclusive, autoDelete, args);
-    }
+    /* Can't instantiate. Just static methods. */
+    private MessagingUtil() { }
 
     public static void sendMessage(Channel channel, Route route, Object message) throws IOException {
         BasicProperties.Builder props = new BasicProperties.Builder();
