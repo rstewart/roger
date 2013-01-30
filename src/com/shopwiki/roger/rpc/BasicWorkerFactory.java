@@ -52,7 +52,7 @@ public class BasicWorkerFactory implements WorkerFactory {
 
     @Override
     public RpcWorkers createWorkers(String queuePrefix) throws IOException {
-        Connection conn = connector.getLongConnection(numThreads);
+        Connection conn = connector.getConnection(numThreads);
 
         List<Channel> channels = new ArrayList<Channel>();
         for (int i = 0; i < numThreads; i++) {

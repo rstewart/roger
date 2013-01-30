@@ -72,10 +72,10 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
 
     /**
      * @param numThreads
-     * @return A RabbitMQ Connection that uses daemon threads (regardless of where it's called from).
+     * @return A RabbitMQ Connection that uses daemon Threads (regardless of where it's called from).
      * @throws IOException
      */
-    public Connection getConnection(final int numThreads) throws IOException {
+    public Connection getDaemonConnection(final int numThreads) throws IOException {
         ConnectDaemon tempThread = new ConnectDaemon(numThreads);
         tempThread.start();
         try {
@@ -94,10 +94,10 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
 
     /**
      * @param numThreads
-     * @return A RabbitMQ Connection that uses non-daemon threads (unless you call this from a daemon thread).
+     * @return A RabbitMQ Connection whose Threads inherit their daemon-status from the calling Thread.
      * @throws IOException
      */
-    public Connection getLongConnection(int numThreads) throws IOException {
+    public Connection getConnection(int numThreads) throws IOException {
         Connection conn = _getConnection(numThreads);
         if (DEBUG) { System.out.println("*** Connected to RabbitMQ: " + conn); }
         return conn;

@@ -33,7 +33,7 @@ import com.shopwiki.roger.rpc.RpcResponse;
 public class ExampleRpcClient {
 
     public static void main(String[] args) throws Exception {
-        Connection conn = ExampleRpcServer.connector.getConnection(1);
+        Connection conn = ExampleRpcServer.connector.getDaemonConnection(1);
         Channel channel = conn.createChannel();
         Route route = new Route("", "HelloWorld");
         Map<String,Object> queueArgs = null;

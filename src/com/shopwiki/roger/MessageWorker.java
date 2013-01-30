@@ -59,7 +59,7 @@ public class MessageWorker<T> {
      * Call this to start consuming & handling messages.
      */
     public void start() throws IOException {
-        Connection conn = connector.getConnection(1);
+        Connection conn = connector.getDaemonConnection(1);
         conn.addShutdownListener(reconnector);
         channel = conn.createChannel();
 
