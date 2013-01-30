@@ -32,7 +32,7 @@ import com.shopwiki.roger.rpc.RpcServer;
 public class ExampleRpcServer {
 
     private static final Address address = new Address("localhost");
-    public static final MessagingConnector connector = new MessagingConnector(address);
+    public static final RabbitConnector connector = new RabbitConnector(address);
 
     public static void main(String[] args) throws Exception {
 

@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Copied from shopwiki repo for use in {@link com.shopwiki.roger.MessagingConnector}.
+ * Copied from shopwiki repo for use in {@link com.shopwiki.roger.RabbitConnector}.
  *
  * @author jdickinson
  */

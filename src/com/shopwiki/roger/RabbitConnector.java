@@ -30,15 +30,15 @@ import com.shopwiki.roger.util.DaemonThreadFactory;
  *
  * @author rstewart
  */
-public class MessagingConnector { // TODO: Rename ???
+public class RabbitConnector {
 
     private final List<Address> addresses;
 
-    public MessagingConnector(Address address) {
+    public RabbitConnector(Address address) {
         this(Arrays.asList(address));
     }
 
-    public MessagingConnector(List<Address> addresses) {
+    public RabbitConnector(List<Address> addresses) {
         this.addresses = ImmutableList.copyOf(addresses);
     }
 

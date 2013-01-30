@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.rabbitmq.client.*;
-import com.shopwiki.roger.MessagingConnector;
+import com.shopwiki.roger.RabbitConnector;
 import com.shopwiki.roger.rpc.RpcServer.WorkerFactory;
 
 /**
@@ -34,10 +34,10 @@ public class BasicWorkerFactory implements WorkerFactory {
 
     private final Map<String, RequestHandler<?,?>> nameToHandler = new LinkedHashMap<String, RequestHandler<?,?>>();
 
-    private final MessagingConnector connector;
+    private final RabbitConnector connector;
     private final int numThreads;
 
-    public BasicWorkerFactory(MessagingConnector connector, int numThreads) {
+    public BasicWorkerFactory(RabbitConnector connector, int numThreads) {
         this.connector = connector;
         this.numThreads = numThreads;
     }

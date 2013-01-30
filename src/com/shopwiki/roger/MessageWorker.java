@@ -30,13 +30,13 @@ import com.shopwiki.roger.MessagingReconnector.*;
  */
 public class MessageWorker<T> {
 
-    private final MessagingConnector connector;
+    private final RabbitConnector connector;
     private final MessageHandler<T> handler;
     private final Map<String,Object> queueArgs;
     private final Route route;
     public final MessagingReconnector reconnector;
 
-    public MessageWorker(MessagingConnector connector, MessageHandler<T> handler, Map<String,Object> queueArgs, Route route, ReconnectLogger reconnectLogger) {
+    public MessageWorker(RabbitConnector connector, MessageHandler<T> handler, Map<String,Object> queueArgs, Route route, ReconnectLogger reconnectLogger) {
         this.connector = connector;
         this.handler = handler;
         this.queueArgs = queueArgs;
