@@ -19,8 +19,8 @@ package com.shopwiki.roger.rpc;
 import java.io.IOException;
 
 import com.rabbitmq.client.*;
-import com.shopwiki.roger.MessagingReconnector;
-import com.shopwiki.roger.MessagingReconnector.*;
+import com.shopwiki.roger.RabbitReconnector;
+import com.shopwiki.roger.RabbitReconnector.*;
 
 /**
  * The main entry point for creating & starting an RPC server using Roger.
@@ -56,7 +56,7 @@ public class RpcServer {
     private final String queuePrefix;
     private final QueueDeclarator queueDeclarator;
     private final PostProcessors postProcessors;
-    private final MessagingReconnector reconnector;
+    private final RabbitReconnector reconnector;
 
     public RpcServer(WorkerFactory workerFactory, String queuePrefix) {
         this(workerFactory, queuePrefix, null, null, null);
@@ -83,7 +83,7 @@ public class RpcServer {
             }
         };
 
-        reconnector = new MessagingReconnector(reconnectHandler, reconnectLogger, 1);
+        reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, 1);
     }
 
     /**

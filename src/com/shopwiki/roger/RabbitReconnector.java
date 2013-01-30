@@ -25,7 +25,7 @@ import com.shopwiki.roger.util.TimeUtil;
  *
  * @author rstewart
  */
-public class MessagingReconnector implements ShutdownListener, Runnable { // TODO: Rename ???
+public class RabbitReconnector implements ShutdownListener, Runnable {
 
     public static interface ReconnectHandler {
         boolean reconnect() throws Exception;
@@ -40,11 +40,11 @@ public class MessagingReconnector implements ShutdownListener, Runnable { // TOD
     private final ReconnectLogger logger;
     private final int secondsBeforeRetry;
 
-    public MessagingReconnector(ReconnectHandler handler, int secondsBeforeRetry) {
+    public RabbitReconnector(ReconnectHandler handler, int secondsBeforeRetry) {
         this(handler, null, secondsBeforeRetry);
     }
 
-    public MessagingReconnector(ReconnectHandler handler, ReconnectLogger logger, int secondsBeforeRetry) {
+    public RabbitReconnector(ReconnectHandler handler, ReconnectLogger logger, int secondsBeforeRetry) {
         this.handler = handler;
         this.logger = logger;
         this.secondsBeforeRetry = secondsBeforeRetry;

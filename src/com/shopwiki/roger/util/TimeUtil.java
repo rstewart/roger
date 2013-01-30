@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * Copied from shopwiki repo for use in {@link com.shopwiki.roger.MessagingReconnector}.
+ * Copied from shopwiki repo for use in {@link com.shopwiki.roger.RabbitReconnector}.
  *
  * @author rstewart
  */

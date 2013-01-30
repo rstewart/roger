@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.rabbitmq.client.*;
-import com.shopwiki.roger.MessagingReconnector.*;
+import com.shopwiki.roger.RabbitReconnector.*;
 
 /**
  * A glue class that packages together a {@link MessageHandler} and the RabbitMQ plumbing needed to use it.
@@ -34,7 +34,7 @@ public class MessageWorker<T> {
     private final MessageHandler<T> handler;
     private final Map<String,Object> queueArgs;
     private final Route route;
-    public final MessagingReconnector reconnector;
+    public final RabbitReconnector reconnector;
 
     public MessageWorker(RabbitConnector connector, MessageHandler<T> handler, Map<String,Object> queueArgs, Route route, ReconnectLogger reconnectLogger) {
         this.connector = connector;
@@ -50,7 +50,7 @@ public class MessageWorker<T> {
             }
         };
 
-        reconnector = new MessagingReconnector(reconnectHandler, reconnectLogger, 10);
+        reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, 10);
     }
 
     private volatile Channel channel;
