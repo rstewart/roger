@@ -30,7 +30,9 @@ import com.shopwiki.roger.util.DaemonThreadFactory;
  *
  * @author rstewart
  */
-public class RabbitConnector {
+public class RabbitConnector { // I would have named this ConnectionFactory, but that's already taken by RabbitMQ.
+
+    private static final boolean DEBUG = MessagingUtil.DEBUG;
 
     private final List<Address> addresses;
 
@@ -70,7 +72,7 @@ public class RabbitConnector {
 
     /**
      * @param numThreads
-     * @return A RabbitMQ Connection that uses daemon threads.
+     * @return A RabbitMQ Connection that uses daemon threads (regardless of where it's called from).
      * @throws IOException
      */
     public Connection getConnection(final int numThreads) throws IOException {
@@ -86,18 +88,18 @@ public class RabbitConnector {
             throw tempThread.ioe;
         }
 
-        if (MessagingUtil.DEBUG) { System.out.println("*** Connected to RabbitMQ: " + tempThread.conn); }
+        if (DEBUG) { System.out.println("*** Connected to RabbitMQ: " + tempThread.conn); }
         return tempThread.conn;
     }
 
     /**
      * @param numThreads
-     * @return A RabbitMQ Connection that uses non-daemon (foreground) threads.
+     * @return A RabbitMQ Connection that uses non-daemon threads (unless you call this from a daemon thread).
      * @throws IOException
      */
     public Connection getLongConnection(int numThreads) throws IOException {
         Connection conn = _getConnection(numThreads);
-        if (MessagingUtil.DEBUG) { System.out.println("*** Connected to RabbitMQ: " + conn); }
+        if (DEBUG) { System.out.println("*** Connected to RabbitMQ: " + conn); }
         return conn;
     }
 
@@ -118,6 +120,7 @@ public class RabbitConnector {
         return conn;
     }
 
+    // TODO: Move this to HessagingHelper ???
     public static void closeConnection(Connection conn) {
         if (conn == null) {
             return;
