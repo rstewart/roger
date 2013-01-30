@@ -25,7 +25,11 @@ import com.rabbitmq.client.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
 /**
- * @owner rstewart
+ * Implementation of the RabbitMQ client's Consumer interface.
+ * The user is not expected to use this class directly.
+ * See {@link MessageWorker} instead.
+ *
+ * @author rstewart
  */
 public class MessageConsumer<T> extends DefaultConsumer {
 

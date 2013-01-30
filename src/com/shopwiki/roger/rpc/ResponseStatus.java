@@ -17,16 +17,24 @@
 package com.shopwiki.roger.rpc;
 
 /**
- * @owner rstewart
+ * Response codes used by {@link RequestConsumer}.
+ *
+ * <TABLE>
+ * <TR><TD>OK</TD><TD>The request was handled normally.</TD></TR>
+ * <TR><TD>MALFORMED_REQUEST</TD><TD>An Exception was thrown while attempting deserialize the request from JSON into a Java Object.</TD></TR>
+ * <TR><TD>INVALID_REQUEST</TD><TD>The {@link RequestHandler} threw an {@link IllegalArgumentException}.</TD></TR>
+ * <TR><TD>HANDLER_ERROR</TD><TD>The {@link RequestHandler} threw an {@link Exception}.</TD></TR>
+ * <TR><TD>NACK</TD><TD>Never returned, only for logging.  Indicates the request was nacked.</TD></TR>
+ * <TR><TD>NUCLEAR</TD><TD>Never returned, only for logging.  Indicates the {@link RequestConsumer} encountered an unexpected error.</TD></TR>
+ * </TABLE>
+ *
+ * @author rstewart
  */
 public enum ResponseStatus {
     OK,
-    MALFORMED_REQUEST, // An Exception was thrown while attempting deserialize the request from JSON into a Java Object
-    INVALID_REQUEST, // The RequestHandler threw an IllegalArgumentException
-    HANDLER_ERROR, // The RequestHandler threw an Exception
-
-    // never returned, only for logging
+    MALFORMED_REQUEST,
+    INVALID_REQUEST,
+    HANDLER_ERROR,
     NACK,
-    NUCLEAR,
-    ;
+    NUCLEAR;
 }

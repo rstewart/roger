@@ -17,7 +17,10 @@
 package com.shopwiki.roger.rpc;
 
 /**
- * @owner rstewart
+ * A special Exception type a user may throw in their {@link RequestHandler}
+ * if they wish for a {@link RequestConsumer} to nack a request.
+ *
+ * @author rstewart
  */
 public class NackException extends Exception {
 

@@ -27,7 +27,9 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
 
 /**
- * @owner rstewart
+ * Static methods for sending JSON-formatted messages (using <A href="http://jackson.codehaus.org/">Jackson</A>) over RabbitMQ.
+ *
+ * @author rstewart
  */
 public class MessagingUtil {
 

@@ -23,7 +23,11 @@ import com.google.common.collect.*;
 import com.rabbitmq.client.Channel;
 
 /**
- * @owner rstewart
+ * A glue class that packages together a {@link RequestHandler} and the RabbitMQ plumbing needed to use it.
+ * The user is expected to instantiate these in a {@link RpcServer.WorkerFactory}.
+ * However, it is also common to just use the {@link BasicWorkerFactory} implementation.
+ *
+ * @author rstewart
  */
 public class RpcWorker {
 

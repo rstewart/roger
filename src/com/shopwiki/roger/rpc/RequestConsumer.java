@@ -27,9 +27,13 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.shopwiki.roger.MessagingUtil;
 
 /**
- * @owner rstewart
+ * Implementation of RabbitMQ's Consumer interface.
+ * The user is not expected to use this class directly.
+ * See {@link RpcWorker} instead.
  *
- * @param <I> request type
+ * @author rstewart
+ *
+ * @param <I> request type (I is for input).
  */
 public class RequestConsumer<I> extends DefaultConsumer {
 

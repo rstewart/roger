@@ -24,7 +24,11 @@ import com.shopwiki.roger.MessagingConnector;
 import com.shopwiki.roger.rpc.RpcServer.WorkerFactory;
 
 /**
- * @owner rstewart
+ * Basic implementation of {@link WorkerFactory}.
+ * The user instantiates one and adds their {@link RequestHandler}s to it.
+ * Uses the same set of Channels (and Threads) for each {@link RequestHandler}.
+ *
+ * @author rstewart
  */
 public class BasicWorkerFactory implements WorkerFactory {
 

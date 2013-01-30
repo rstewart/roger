@@ -20,9 +20,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Copied from shopwiki
+ * Copied from shopwiki repo for use in {@link com.shopwiki.roger.MessagingConnector}.
  *
- * @owner jdickinson
+ * @author jdickinson
  */
 public final class DaemonThreadFactory {
 

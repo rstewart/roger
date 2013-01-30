@@ -24,7 +24,9 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import com.shopwiki.roger.*;
 
 /**
- * @owner rstewart
+ * Used by {@link RequestConsumer} to format an Exception and its stack trace as JSON.
+ *
+ * @author jdickinson
  */
 @JsonPropertyOrder(value={"exceptionName", "exceptionMsg", "exceptionStackTrace", "cause"})
 public class ExceptionResponse extends AbstractMessage {

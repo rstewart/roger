@@ -24,7 +24,9 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.AMQP.Queue.DeclareOk;
 
 /**
- * @owner rstewart
+ * Static methods for declaring the 3 types of queues (used by Roger).
+ *
+ * @author rstewart
  */
 public class QueueUtil {
     // TODO: Make methods non-static and make args an instance-field ???
@@ -33,26 +35,38 @@ public class QueueUtil {
     private QueueUtil() { }
 
     /**
-     * Used by RpcClients.
-     * Same as ChannelN.queueDeclare()
+     * Used by RPC clients (e.g. {@link com.shopwiki.roger.rpc.RpcClient}).
+     *
+     * Same behavior as com.rabbitmq.client.impl.ChannelN.queueDeclare():
+     * Non-durable,
+     * exclusive,
+     * auto-delete.
      */
     public static DeclareOk declareAnonymousQueue(Channel channel, Map<String,Object> args) throws IOException {
         final String queueName = "";
-        final boolean exclusive = true;
-        return declareTempQueue(channel, queueName, exclusive, args);
+        return declareTempQueue(channel, queueName, args);
     }
 
     /**
-     * Used by temporary (i.e. test) RpcServers (exclusive = true)
+     * Used by temporary (i.e. for testing) {@link com.shopwiki.roger.rpc.RpcServer}s.
+     *
+     * Non-durable,
+     * exclusive,
+     * auto-delete.
      */
-    public static DeclareOk declareTempQueue(Channel channel, String queueName, boolean exclusive, Map<String,Object> args) throws IOException {
+    public static DeclareOk declareTempQueue(Channel channel, String queueName, Map<String,Object> args) throws IOException {
         final boolean durable = false;
+        final boolean exclusive = queueName.equals("");
         final boolean autoDelete = true;
         return declareQueue(channel, queueName, durable, exclusive, autoDelete, args);
     }
 
     /**
-     * Used by permanent (i.e. production) RpcServers
+     * Used by permanent (i.e. production) RpcServers.
+     *
+     * Durable,
+     * non-exclusive,
+     * non-auto-delete.
      */
     public static DeclareOk declareNamedQueue(Channel channel, String queueName, Map<String,Object> args) throws IOException {
         final boolean durable = true; // TODO: make configurable ???

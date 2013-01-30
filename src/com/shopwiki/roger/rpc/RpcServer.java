@@ -23,15 +23,30 @@ import com.shopwiki.roger.MessagingReconnector;
 import com.shopwiki.roger.MessagingReconnector.*;
 
 /**
- * @owner rstewart
+ * The main entry point for creating & starting an RPC server using Roger.
+ *
+ * @author rstewart
  */
 public class RpcServer {
 
+    /**
+     * Used by {@link RpcServer} to create {@link RpcWorker}s.
+     *
+     * A standard implementation is provided: {@link BasicWorkerFactory}.
+     * However, the user may create their own implementation if they
+     * desire more control over how {@link Channel}s are allocated to {@link RpcWorker}s.
+     */
     public interface WorkerFactory {
         RpcWorkers createWorkers(String queuePrefix) throws IOException;
     }
 
     // TODO: Rename this QueueManager ???
+    // TODO: Provide a standard implementation similar to ShopWiki's ???
+    /**
+     * No implementation is required.
+     * You only need to provide one if you want an {@link RpcServer} to programmatically
+     * create/check your RPC queues & routing-key bindings.
+     */
     public static interface QueueDeclarator {
         void declareQueue(Channel channel, RpcWorker worker) throws IOException;
         void bindQueue(Channel channel, RpcWorker worker) throws IOException;
@@ -47,6 +62,13 @@ public class RpcServer {
         this(workerFactory, queuePrefix, null, null, null);
     }
 
+    /**
+     * @param workerFactory
+     * @param queuePrefix
+     * @param queueDeclarator
+     * @param postProcessors
+     * @param reconnectLogger
+     */
     public RpcServer(WorkerFactory workerFactory, String queuePrefix, QueueDeclarator queueDeclarator, PostProcessors postProcessors, ReconnectLogger reconnectLogger) {
         this.workerFactory = workerFactory;
         this.queuePrefix = queuePrefix;
@@ -56,7 +78,7 @@ public class RpcServer {
         ReconnectHandler reconnectHandler = new ReconnectHandler() {
             @Override
             public boolean reconnect() throws Exception {
-                init();
+                start();
                 return true;
             }
         };
@@ -64,7 +86,14 @@ public class RpcServer {
         reconnector = new MessagingReconnector(reconnectHandler, reconnectLogger, 1);
     }
 
-    private void init() throws IOException {
+    /**
+     * 1. Creates {@link RpcWorker}s using the {@link WorkerFactory} provided to the constructor.
+     * 2. Declares queues & binds routing-keys if a (@link QueueDeclarator} was provided to the constructor.
+     * 3. Starts each {@link RpcWorker}.
+     *
+     * @throws IOException
+     */
+    public void start() throws IOException {
         RpcWorkers workers = workerFactory.createWorkers(queuePrefix);
 
         Connection conn = workers.getConnection();
@@ -86,9 +115,5 @@ public class RpcServer {
             channel.queueDeclarePassive(queueName); // make sure the handler's queue exists
             worker.start();
         }
-    }
-
-    public void start() throws IOException {
-        init();
     }
 }

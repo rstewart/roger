@@ -20,9 +20,12 @@ import com.rabbitmq.client.*;
 import com.shopwiki.roger.util.TimeUtil;
 
 /**
- * @owner rstewart
+ * Used to re-establish a Connection to a RabbitMQ when a connection breaks.
+ * Add an instance of this a Connection to use it.
+ *
+ * @author rstewart
  */
-public class MessagingReconnector implements ShutdownListener, Runnable {
+public class MessagingReconnector implements ShutdownListener, Runnable { // TODO: Rename ???
 
     public static interface ReconnectHandler {
         boolean reconnect() throws Exception;

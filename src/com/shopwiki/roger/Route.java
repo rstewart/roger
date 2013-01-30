@@ -17,7 +17,9 @@
 package com.shopwiki.roger;
 
 /**
- * @owner rstewart
+ * Immutable bean for pairing a RabbitMQ exchange & routing-key.
+ *
+ * @author rstewart
  */
 public class Route {
 

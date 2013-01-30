@@ -26,7 +26,9 @@ import com.shopwiki.roger.rpc.RpcClient;
 import com.shopwiki.roger.rpc.RpcResponse;
 
 /**
- * @author Rob
+ * Run this main after {@link ExampleRpcServer}.
+ *
+ * @author rstewart
  */
 public class ExampleRpcClient {
 

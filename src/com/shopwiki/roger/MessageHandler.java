@@ -21,7 +21,12 @@ import org.codehaus.jackson.type.TypeReference;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
 /**
- * @owner rstewart
+ * This interface is left for the user to implement.
+ * An instance of this is used to create a {@link MessageWorker}.
+ *
+ * @param <T> message type
+ *
+ * @author rstewart
  */
 public interface MessageHandler<T> {
 
@@ -30,5 +35,8 @@ public interface MessageHandler<T> {
     // ...oh Well, make them implement one more method.
     TypeReference<T> getMessageType();
 
+    /**
+     * @param message Deserialized from JSON.
+     */
     void handleMessage(T message, BasicProperties properties);
 }

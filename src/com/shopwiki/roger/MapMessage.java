@@ -22,9 +22,9 @@ import org.codehaus.jackson.type.TypeReference;
 
 /**
  * Mainly for debugging.
- * Better to make your own class extending BasicJsonMessage.
+ * Better to make your own class extending {@link AbstractMessage}.
  *
- * @owner rstewart
+ * @author rstewart
  */
 public class MapMessage extends LinkedHashMap<String,Object> {
 
@@ -32,6 +32,9 @@ public class MapMessage extends LinkedHashMap<String,Object> {
 
     public static final TypeReference<MapMessage> TYPE_REF = new TypeReference<MapMessage>() { };
 
+    /**
+     * @return A JSON formatted representation of this object using Jackson ObjectMapper.
+     */
     @Override
     public String toString() {
         return MessagingUtil.prettyPrintMessage(this);

@@ -23,7 +23,10 @@ import com.rabbitmq.client.*;
 import com.shopwiki.roger.MessagingReconnector.*;
 
 /**
- * @owner rstewart
+ * A glue class that packages together a {@link MessageHandler} and the RabbitMQ plumbing needed to use it.
+ * The user is expected to instantiate one of these and call the {@link #start()} method to begin handling messages.
+ *
+ * @author rstewart
  */
 public class MessageWorker<T> {
 
@@ -52,6 +55,9 @@ public class MessageWorker<T> {
 
     private volatile Channel channel;
 
+    /**
+     * Call this to start consuming & handling messages.
+     */
     public void start() throws IOException {
         Connection conn = connector.getConnection(1);
         conn.addShutdownListener(reconnector);

@@ -25,9 +25,12 @@ import com.rabbitmq.client.*;
 import com.shopwiki.roger.util.DaemonThreadFactory;
 
 /**
- * @owner rstewart
+ * Wraps a list of RabbitMQ server addresses.
+ * Use an instance of this to create Connections.
+ *
+ * @author rstewart
  */
-public class MessagingConnector {
+public class MessagingConnector { // TODO: Rename ???
 
     private final List<Address> addresses;
 
@@ -65,6 +68,11 @@ public class MessagingConnector {
         }
     }
 
+    /**
+     * @param numThreads
+     * @return A RabbitMQ Connection that uses daemon threads.
+     * @throws IOException
+     */
     public Connection getConnection(final int numThreads) throws IOException {
         ConnectDaemon tempThread = new ConnectDaemon(numThreads);
         tempThread.start();
@@ -82,6 +90,11 @@ public class MessagingConnector {
         return tempThread.conn;
     }
 
+    /**
+     * @param numThreads
+     * @return A RabbitMQ Connection that uses non-daemon (foreground) threads.
+     * @throws IOException
+     */
     public Connection getLongConnection(int numThreads) throws IOException {
         Connection conn = _getConnection(numThreads);
         if (MessagingUtil.DEBUG) { System.out.println("*** Connected to RabbitMQ: " + conn); }

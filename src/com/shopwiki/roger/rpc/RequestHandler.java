@@ -19,7 +19,14 @@ package com.shopwiki.roger.rpc;
 import org.codehaus.jackson.type.TypeReference;
 
 /**
- * @owner rstewart
+ * This interface is left for the user to implement.
+ * Instances of this are generally passed into a {@link RpcServer.WorkerFactory}
+ * and used to create {@link RpcWorker}s.
+ *
+ * @param <I> request type (I for input).
+ * @param <O> response type (O for output).
+ *
+ * @author rstewart
  */
 public interface RequestHandler<I,O> {
 
@@ -28,5 +35,12 @@ public interface RequestHandler<I,O> {
     // ...oh Well, make them implement one more method.
     TypeReference<I> getRequestType();
 
+    /**
+     * @param request Deserialized from JSON.
+     * @return response Serialized to JSON.
+     * @throws Exception Some types of Exceptions produce a special {@link ResponseStatus}.
+     * {@link IllegalArgumentException} -> INVALID_REQUEST
+     * {@link NackException} -> NACK
+     */
     O handleRequest(I request) throws Exception;
 }

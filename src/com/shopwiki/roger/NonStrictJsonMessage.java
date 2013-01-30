@@ -16,18 +16,13 @@
 
 package com.shopwiki.roger;
 
-/**
- * Extend this class get a free JSON-formatted {@link #toString()} method.
- *
- * @author rstewart
- */
-public abstract class AbstractMessage {
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-    /**
-     * @return A JSON formatted representation of this object using Jackson ObjectMapper.
-     */
-    @Override
-    public String toString() {
-        return MessagingUtil.prettyPrintMessage(this);
-    }
+/**
+ * Extend this class to have Jackson ignore extra fields when deserializing JSON messages.
+ */
+@JsonIgnoreProperties(ignoreUnknown=true)
+public abstract class NonStrictJsonMessage extends AbstractMessage {
+
+    // Purposely left blank
 }

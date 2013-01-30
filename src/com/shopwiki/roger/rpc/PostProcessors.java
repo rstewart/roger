@@ -20,11 +20,28 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * @owner rstewart
+ * A collection {@link PostProcessor}s to be run in {@link RequestConsumer} after each request is handled.
+ *
+ * @author rstewart
  */
 public class PostProcessors {
 
+    /**
+     * Create implementations for any actions you want taken after each request is handled.
+     * For example: error logging.
+     *
+     * @author rstewart
+     */
     public static interface PostProcessor {
+        /**
+         * @param queueName
+         * @param responseStatus
+         * @param request
+         * @param response
+         * @param thrown
+         * @param timeTaken
+         * @throws Exception
+         */
         public void process(
                 String queueName,
                 ResponseStatus responseStatus,
@@ -41,6 +58,9 @@ public class PostProcessors {
         ppToExecutor.put(pp, Executors.newFixedThreadPool(1));
     }
 
+    /**
+     * Called by {@link RequestConsumer} after each request is handled.
+     */
     public void process(
             final String queueName,
             final ResponseStatus responseStatus,

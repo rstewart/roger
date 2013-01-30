@@ -28,7 +28,9 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.shopwiki.roger.*;
 
 /**
- * @owner rstewart
+ * Mainly for testing a {@link RpcServer}s.
+ *
+ * @author rstewart
  */
 public class RpcClient {
 
@@ -54,7 +56,7 @@ public class RpcClient {
 
         @Override
         public TypeReference<MapMessage> getMessageType() {
-            return MapMessage.TYPE_REF; // TODO: Make generic ???
+            return MapMessage.TYPE_REF; // TODO: Make generic (NOT MapMessage) ???
         }
 
         @Override
@@ -77,6 +79,11 @@ public class RpcClient {
         }
     }
 
+    /**
+     * @param request
+     * @return response
+     * @throws IOException Only if exceptionsAsJson is set to true.
+     */
     public Future<RpcResponse> sendRequest(Object request) throws IOException {
         String id = java.util.UUID.randomUUID().toString();
         String replyQueue = responseConsumer.getQueueName();

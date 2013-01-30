@@ -21,7 +21,10 @@ import java.util.*;
 import com.rabbitmq.client.Connection;
 
 /**
- * @owner rstewart
+ * A collection of {@link RpcWorker}s.
+ * Created by a {@link RpcServer.WorkerFactory}.
+ *
+ * @author rstewart
  */
 public class RpcWorkers implements Iterable<RpcWorker> {
 
@@ -32,6 +35,9 @@ public class RpcWorkers implements Iterable<RpcWorker> {
         this.conn = conn;
     }
 
+    /**
+     * @return Connection to be used by RpcServer for queue declaration & shutdown listening.
+     */
     public Connection getConnection() {
         return conn;
     }

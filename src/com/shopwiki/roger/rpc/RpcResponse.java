@@ -23,14 +23,14 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.shopwiki.roger.*;
 
 /**
- * Only used by the RpcClient
+ * Used by {@link RpcClient} to conveniently bundle the headers & body of an RPC response.
  *
- * @owner rstewart
+ * @author rstewart
  */
 public class RpcResponse {
 
     private final BasicProperties props;
-    private final MapMessage body; // Make generic ???
+    private final MapMessage body; // TODO: Make generic ???
     private final ResponseStatus status;
 
     public RpcResponse(BasicProperties props, MapMessage body) {
