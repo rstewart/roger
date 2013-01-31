@@ -39,22 +39,29 @@ import com.shopwiki.roger.rpc.RpcWorker;
  */
 public class ExampleRpcServer {
 
+    public static class Request {
+        public String name;
+    }
+
+    public static class Response {
+        public final String greeting;
+        public Response(String greeting) { this.greeting = greeting; }
+    }
+
     private static final Address address = new Address("localhost");
     public static final RabbitConnector connector = new RabbitConnector(address);
 
     public static void main(String[] args) throws Exception {
 
-        RequestHandler<String, MapMessage> handler = new RequestHandler<String, MapMessage>() {
+        RequestHandler<Request, Response> handler = new RequestHandler<Request, Response>() {
             @Override
-            public TypeReference<String> getRequestType() {
-                return new TypeReference<String>() {};
+            public TypeReference<Request> getRequestType() {
+                return new TypeReference<Request>() {};
             }
 
             @Override
-            public MapMessage handleRequest(String name) throws Exception {
-                MapMessage response = new MapMessage();
-                response.put("greeting", "Hello " + name + "!");
-                return response;
+            public Response handleRequest(Request request) throws Exception {
+                return new Response("Hello " + request.name + "!");
             }
         };
 
