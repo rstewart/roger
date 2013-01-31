@@ -58,6 +58,10 @@ public class RpcServer {
     private final PostProcessors postProcessors;
     private final RabbitReconnector reconnector;
 
+    /**
+     * @param workerFactory
+     * @param queuePrefix
+     */
     public RpcServer(WorkerFactory workerFactory, String queuePrefix) {
         this(workerFactory, queuePrefix, null, null, null);
     }
