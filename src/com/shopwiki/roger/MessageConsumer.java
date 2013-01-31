@@ -41,6 +41,7 @@ public class MessageConsumer<T> extends DefaultConsumer {
     private final Route route;
     private final String queueName;
 
+    // TODO: Allow this to take multiple Channels, the same way RequestConsumer does ???
     public MessageConsumer(MessageHandler<T> handler, Channel channel, Map<String,Object> queueArgs, Route route) throws IOException {
         super(channel);
         this.handler = handler;

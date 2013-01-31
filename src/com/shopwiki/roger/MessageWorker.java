@@ -35,12 +35,40 @@ public class MessageWorker<T> {
     private final Map<String,Object> queueArgs;
     private final Route route;
     public final RabbitReconnector reconnector;
+    private final boolean daemon;
 
-    public MessageWorker(RabbitConnector connector, MessageHandler<T> handler, Map<String,Object> queueArgs, Route route, ReconnectLogger reconnectLogger) {
+    /**
+     * @param connector
+     * @param handler
+     * @param route
+     * @param daemon
+     */
+    public MessageWorker(RabbitConnector connector, MessageHandler<T> handler, Route route, boolean daemon) {
+        this(connector, handler, null, route, null, daemon);
+    }
+
+    /**
+     * @param connector
+     * @param handler
+     * @param queueArgs
+     * @param route
+     * @param reconnectLogger
+     * @param daemon
+     */
+    public MessageWorker(
+            RabbitConnector connector,
+            MessageHandler<T> handler,
+            Map<String,Object> queueArgs,
+            Route route,
+            ReconnectLogger reconnectLogger,
+            boolean daemon
+            ) {
+
         this.connector = connector;
         this.handler = handler;
         this.queueArgs = queueArgs;
         this.route = route;
+        this.daemon = daemon;
 
         ReconnectHandler reconnectHandler = new ReconnectHandler() {
             @Override
@@ -50,7 +78,8 @@ public class MessageWorker<T> {
             }
         };
 
-        reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, 10);
+        int secondsBeforeRetry = 10; // TODO: Parameterize this ???
+        reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, secondsBeforeRetry);
     }
 
     private volatile Channel channel;
@@ -59,7 +88,8 @@ public class MessageWorker<T> {
      * Call this to start consuming & handling messages.
      */
     public void start() throws IOException {
-        Connection conn = connector.getDaemonConnection(1);
+        int numThreads = 1; // TODO: Parameterize this (will require multiple channels) ???
+        Connection conn = daemon ? connector.getDaemonConnection(numThreads) : connector.getConnection(numThreads);
         conn.addShutdownListener(reconnector);
         channel = conn.createChannel();
 
@@ -67,6 +97,12 @@ public class MessageWorker<T> {
         consumer.start();
     }
 
+    // TODO: Get rid of this ???
+    /**
+     * Send a message to the same route this Worker is receiving from.
+     * @param message
+     * @throws IOException
+     */
     public void sendMessage(T message) throws IOException {
         MessagingUtil.sendMessage(channel, route, message);
     }
