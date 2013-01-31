@@ -16,13 +16,21 @@
 
 package com.shopwiki.roger.example;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.codehaus.jackson.type.TypeReference;
 
 import com.rabbitmq.client.Address;
+import com.rabbitmq.client.Channel;
 import com.shopwiki.roger.*;
+import com.shopwiki.roger.RabbitReconnector.ReconnectLogger;
 import com.shopwiki.roger.rpc.BasicWorkerFactory;
+import com.shopwiki.roger.rpc.PostProcessors;
 import com.shopwiki.roger.rpc.RequestHandler;
 import com.shopwiki.roger.rpc.RpcServer;
+import com.shopwiki.roger.rpc.RpcServer.QueueDeclarator;
+import com.shopwiki.roger.rpc.RpcWorker;
 
 /**
  * Run this main before {@link ExampleRpcClient}.
@@ -53,7 +61,29 @@ public class ExampleRpcServer {
         BasicWorkerFactory factory = new BasicWorkerFactory(connector, 2);
         factory.addHandler("HelloWorld", handler);
 
-        RpcServer server = new RpcServer(factory, "Example-Server");
+        /*
+         * NOTE: The QueueDeclarator is optional.
+         * You can set it to null and just create the queue manually.
+         * by going to http://localhost:55672/#/queues
+         */
+        QueueDeclarator queueDeclarator = new QueueDeclarator() {
+            @Override
+            public void declareQueue(Channel channel, RpcWorker worker) throws IOException {
+                Map<String,Object> queueArgs = null;
+                QueueUtil.declareNamedQueue(channel, worker.getQueueName(), queueArgs);
+            }
+
+            @Override
+            public void bindQueue(Channel channel, RpcWorker worker) throws IOException {
+                // Not using any routing-key
+            }
+        };
+
+        String queuePrefix = "RpcExample_";
+        PostProcessors postProcessors = null;
+        ReconnectLogger reconnectLogger = null;
+
+        RpcServer server = new RpcServer(factory, queuePrefix, queueDeclarator, postProcessors, reconnectLogger);
         server.start();
     }
 }

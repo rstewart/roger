@@ -35,7 +35,7 @@ public class ExampleRpcClient {
     public static void main(String[] args) throws Exception {
         Connection conn = ExampleRpcServer.connector.getDaemonConnection(1);
         Channel channel = conn.createChannel();
-        Route route = new Route("", "HelloWorld");
+        Route route = new Route("", "RpcExample_HelloWorld");
         Map<String,Object> queueArgs = null;
         RpcClient client = new RpcClient(channel, route, queueArgs, false);
         Future<RpcResponse> future = client.sendRequest("Robert");
