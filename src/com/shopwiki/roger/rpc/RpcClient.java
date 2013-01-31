@@ -26,6 +26,8 @@ import com.google.common.util.concurrent.AbstractFuture;
 import com.rabbitmq.client.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.shopwiki.roger.*;
+import com.shopwiki.roger.event.MessageConsumer;
+import com.shopwiki.roger.event.MessageHandler;
 
 /**
  * Mainly for testing a {@link RpcServer}s.

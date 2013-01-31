@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package com.shopwiki.roger;
+package com.shopwiki.roger.event;
 
 import java.io.IOException;
 import java.util.Map;
 
 import com.rabbitmq.client.*;
+import com.shopwiki.roger.MessagingUtil;
+import com.shopwiki.roger.RabbitConnector;
+import com.shopwiki.roger.RabbitReconnector;
+import com.shopwiki.roger.Route;
 import com.shopwiki.roger.RabbitReconnector.*;
 
 /**

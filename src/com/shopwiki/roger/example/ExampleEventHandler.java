@@ -23,6 +23,8 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.shopwiki.roger.*;
+import com.shopwiki.roger.event.MessageHandler;
+import com.shopwiki.roger.event.MessageWorker;
 
 /**
  * Run this main before {@link ExampleEventSender}.

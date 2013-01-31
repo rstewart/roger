@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shopwiki.roger;
+package com.shopwiki.roger.event;
 
 import java.io.IOException;
 import java.util.Map;
@@ -23,6 +23,9 @@ import org.codehaus.jackson.type.TypeReference;
 
 import com.rabbitmq.client.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
+import com.shopwiki.roger.MessagingUtil;
+import com.shopwiki.roger.QueueUtil;
+import com.shopwiki.roger.Route;
 
 /**
  * Implementation of the RabbitMQ client's Consumer interface.

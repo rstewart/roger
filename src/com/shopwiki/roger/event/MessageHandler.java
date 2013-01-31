@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shopwiki.roger;
+package com.shopwiki.roger.event;
 
 import org.codehaus.jackson.type.TypeReference;
 
