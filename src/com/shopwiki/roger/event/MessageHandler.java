@@ -33,6 +33,9 @@ public interface MessageHandler<T> {
     // TODO: WHY doesn't this work ???
     //private final TypeReference<T> typeRef = new TypeReference<T>() { };
     // ...oh Well, make them implement one more method.
+    /**
+     * @return A TypeReference used by Jackson to know what class to instantiate when deserializing messages.
+     */
     TypeReference<T> getMessageType();
 
     /**
