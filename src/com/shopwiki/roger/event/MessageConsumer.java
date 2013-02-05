@@ -70,13 +70,13 @@ public class MessageConsumer<T> extends DefaultConsumer {
     public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
         T message = MessagingUtil.getDeliveryBody(body, messageType);
         if (DEBUG) {
-            System.out.println("*** MessageConsumer " + MessageConsumer.this.getClass().getName() + " RECEIVED MESSAGE ***");
+            System.out.println("*** MessageConsumer " + handler.getClass().getCanonicalName() + " RECEIVED MESSAGE ***");
             System.out.println("*** consumerTag: " + consumerTag);
             System.out.println("*** envelope:\n" + MessagingUtil.prettyPrint(envelope));
             System.out.println("*** properties:\n" + MessagingUtil.prettyPrint(properties));
             System.out.println("*** message: " + MessagingUtil.prettyPrintMessage(message));
         }
-        handler.handleMessage(message, properties);
+        handler.handleMessage(message);
         // AUTO-ACKING
     }
 }

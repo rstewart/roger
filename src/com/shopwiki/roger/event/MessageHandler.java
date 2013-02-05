@@ -18,8 +18,6 @@ package com.shopwiki.roger.event;
 
 import org.codehaus.jackson.type.TypeReference;
 
-import com.rabbitmq.client.AMQP.BasicProperties;
-
 /**
  * This interface is left for the user to implement.
  * An instance of this is used to create a {@link MessageWorker}.
@@ -41,5 +39,5 @@ public interface MessageHandler<T> {
     /**
      * @param message Deserialized from JSON.
      */
-    void handleMessage(T message, BasicProperties properties);
+    void handleMessage(T message);
 }

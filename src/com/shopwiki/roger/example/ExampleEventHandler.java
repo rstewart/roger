@@ -19,7 +19,6 @@ package com.shopwiki.roger.example;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.rabbitmq.client.Address;
-import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.shopwiki.roger.*;
@@ -46,7 +45,7 @@ public class ExampleEventHandler {
             }
 
             @Override
-            public void handleMessage(String name, BasicProperties properties) {
+            public void handleMessage(String name) {
                 System.out.println("Hello " + name + "!");
             }
         };
