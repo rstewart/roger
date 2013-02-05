@@ -20,14 +20,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.codehaus.jackson.type.TypeReference;
-
 import com.google.common.util.concurrent.AbstractFuture;
 import com.rabbitmq.client.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.shopwiki.roger.*;
-import com.shopwiki.roger.event.MessageConsumer;
-import com.shopwiki.roger.event.MessageHandler;
 
 /**
  * Mainly for testing a {@link RpcServer}s.
@@ -40,7 +36,7 @@ public class RpcClient {
     private final Route requestRoute;
     private final boolean exceptionsAsJson;
 
-    private final MessageConsumer<MapMessage> responseConsumer;
+    private final String responseQueueName;
 
     private final Map<String,RpcFuture> idToFuture = new ConcurrentHashMap<String,RpcFuture>();
 
@@ -49,20 +45,30 @@ public class RpcClient {
         this.requestRoute = requestRoute;
         this.exceptionsAsJson = exceptionsAsJson;
 
-        ResponseHandler handler = new ResponseHandler();
-        responseConsumer = new MessageConsumer<MapMessage>(handler, channel, responseQueueArgs, null);
-        responseConsumer.start();
+        responseQueueName = QueueUtil.declareAnonymousQueue(channel, responseQueueArgs).getQueue();
+        Consumer responseConsumer = new ResponseConsumer(channel);
+        channel.basicConsume(responseQueueName, true, responseConsumer);
     }
 
-    private class ResponseHandler implements MessageHandler<MapMessage> {
+    private class ResponseConsumer extends DefaultConsumer {
 
-        @Override
-        public TypeReference<MapMessage> getMessageType() {
-            return MapMessage.TYPE_REF; // TODO: Make generic (NOT MapMessage) ???
+        public ResponseConsumer(Channel channel) {
+            super(channel);
         }
 
         @Override
-        public void handleMessage(MapMessage body, BasicProperties props) {
+        public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties props, byte[] body) throws IOException {
+
+            MapMessage message = MessagingUtil.getDeliveryBody(body, MapMessage.TYPE_REF);
+
+            if (MessagingUtil.DEBUG) {
+                System.out.println("*** ResponseConsumer RECEIVED RESPONSE ***");
+                System.out.println("*** consumerTag: " + consumerTag);
+                System.out.println("*** envelope:\n" + MessagingUtil.prettyPrint(envelope));
+                System.out.println("*** properties:\n" + MessagingUtil.prettyPrint(props));
+                System.out.println("*** response: " + MessagingUtil.prettyPrintMessage(message));
+            }
+
             RpcFuture future = idToFuture.remove(props.getCorrelationId());
             if (future == null) {
                 System.err.println("### Received a response not meant for me! ###");
@@ -71,7 +77,7 @@ public class RpcClient {
                 return;
             }
 
-            RpcResponse response = new RpcResponse(props, body);
+            RpcResponse response = new RpcResponse(props, message);
 
             if (exceptionsAsJson) {
                 future.complete(response); // return JSON regardless of the status
@@ -88,8 +94,7 @@ public class RpcClient {
      */
     public Future<RpcResponse> sendRequest(Object request) throws IOException {
         String id = java.util.UUID.randomUUID().toString();
-        String replyQueue = responseConsumer.getQueueName();
-        MessagingUtil.sendRequest(channel, requestRoute, request, replyQueue, id);
+        MessagingUtil.sendRequest(channel, requestRoute, request, responseQueueName, id);
 
         RpcFuture future = new RpcFuture();
         idToFuture.put(id, future);
