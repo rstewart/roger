@@ -32,6 +32,8 @@ import com.shopwiki.roger.*;
  */
 public class RpcClient {
 
+    private static final boolean DEBUG = MessagingUtil.DEBUG;
+
     private final Channel channel;
     private final Route requestRoute;
     private final boolean exceptionsAsJson;
@@ -61,7 +63,7 @@ public class RpcClient {
 
             MapMessage message = MessagingUtil.getDeliveryBody(body, MapMessage.TYPE_REF);
 
-            if (MessagingUtil.DEBUG) {
+            if (DEBUG) {
                 System.out.println("*** ResponseConsumer RECEIVED RESPONSE ***");
                 System.out.println("*** consumerTag: " + consumerTag);
                 System.out.println("*** envelope:\n" + MessagingUtil.prettyPrint(envelope));
