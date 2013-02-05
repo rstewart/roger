@@ -93,7 +93,7 @@ public class RequestConsumer<I> extends DefaultConsumer {
             }
 
             if (DEBUG) {
-                System.out.println("*** RequestHandler " + handler.getClass().getName() + " RECEIVED REQUEST ***");
+                System.out.println("*** RequestHandler " + handler.getClass().getCanonicalName() + " RECEIVED REQUEST ***");
                 System.out.println("*** consumerTag: " + consumerTag);
                 System.out.println("*** envelope:\n" + MessagingUtil.prettyPrint(envelope));
                 System.out.println("*** requestProps:\n" + MessagingUtil.prettyPrint(requestProps));
