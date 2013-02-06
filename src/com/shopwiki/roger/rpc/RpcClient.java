@@ -49,13 +49,11 @@ public class RpcClient<O> {
     private final Map<String,RpcFuture<O>> idToFuture = new ConcurrentHashMap<String,RpcFuture<O>>();
 
     /**
-     * Create an RpcClient that returns all responses as MapMessages.
-     *
      * @param channel
      * @param requestRoute
      * @param responseQueueArgs
      * @param exceptionAsJson
-     * @return
+     * @return RpcClient that returns all responses as MapMessages.
      * @throws IOException
      */
     public static RpcClient<MapMessage> create(
@@ -69,13 +67,11 @@ public class RpcClient<O> {
     }
 
     /**
-     * Create an RpcClient that returns responses using the supplied responseType.
-     *
      * @param channel
      * @param requestRoute
      * @param responseQueueArgs
      * @param responseType
-     * @return
+     * @return RpcClient that returns responses using the supplied responseType.
      * @throws IOException
      */
     public static <O> RpcClient<O> create(
