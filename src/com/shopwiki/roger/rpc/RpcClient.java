@@ -96,10 +96,9 @@ public class RpcClient {
      */
     public Future<RpcResponse> sendRequest(Object request) throws IOException {
         String id = java.util.UUID.randomUUID().toString();
-        MessagingUtil.sendRequest(channel, requestRoute, request, responseQueueName, id);
-
         RpcFuture future = new RpcFuture();
         idToFuture.put(id, future);
+        MessagingUtil.sendRequest(channel, requestRoute, request, responseQueueName, id);
         return future;
     }
 
