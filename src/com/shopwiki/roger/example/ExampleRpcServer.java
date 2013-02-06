@@ -44,8 +44,7 @@ public class ExampleRpcServer {
     }
 
     public static class Response {
-        public final String greeting;
-        public Response(String greeting) { this.greeting = greeting; }
+        public String greeting;
     }
 
     private static final Address address = new Address("localhost");
@@ -61,7 +60,9 @@ public class ExampleRpcServer {
 
             @Override
             public Response handleRequest(Request request) throws Exception {
-                return new Response("Hello " + request.name + "!");
+                Response response = new Response();
+                response.greeting = "Hello " + request.name + "!";
+                return response;
             }
         };
 

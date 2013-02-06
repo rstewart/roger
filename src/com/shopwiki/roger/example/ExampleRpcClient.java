@@ -18,11 +18,16 @@ package com.shopwiki.roger.example;
 
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import org.codehaus.jackson.type.TypeReference;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
+import com.shopwiki.roger.MessagingUtil;
 import com.shopwiki.roger.Route;
 import com.shopwiki.roger.example.ExampleRpcServer.Request;
+import com.shopwiki.roger.example.ExampleRpcServer.Response;
 import com.shopwiki.roger.rpc.RpcClient;
 import com.shopwiki.roger.rpc.RpcResponse;
 
@@ -39,16 +44,17 @@ public class ExampleRpcClient {
         Route route = new Route("", "RpcExample_HelloWorld");
         Map<String,Object> queueArgs = null;
 
-        RpcClient client = new RpcClient(channel, route, queueArgs, false);
+        TypeReference<Response> responseType = new TypeReference<Response>() { };
+        RpcClient<Response> client = RpcClient.create(channel, route, queueArgs, responseType);
 
         Request request = new Request();
         request.name = "Robert";
 
-        Future<RpcResponse> future = client.sendRequest(request);
-        RpcResponse response = future.get();
+        Future<RpcResponse<Response>> future = client.sendRequest(request);
+        RpcResponse<Response> response = future.get(5, TimeUnit.SECONDS);
 
         System.out.println("HEADERS:\n" + response.getHeaders());
         System.out.println();
-        System.out.println("BODY:\n" + response.getBody());
+        System.out.println("BODY:\n" + MessagingUtil.prettyPrintMessage(response.getBody()));
     }
 }

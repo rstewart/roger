@@ -20,28 +20,25 @@ import java.util.*;
 
 import com.google.common.collect.Maps;
 import com.rabbitmq.client.AMQP.BasicProperties;
-import com.shopwiki.roger.*;
 
 /**
  * Used by {@link RpcClient} to conveniently bundle the headers & body of an RPC response.
  *
  * @author rstewart
  */
-public class RpcResponse {
+public class RpcResponse<T> {
 
     private final BasicProperties props;
-    private final MapMessage body; // TODO: Make generic ???
+    private final T body;
     private final ResponseStatus status;
 
-    public RpcResponse(BasicProperties props, MapMessage body) {
+    public RpcResponse(BasicProperties props, T body) {
         this.props = props;
         this.body = body;
-
-        String statusStr = getHeaders().get("status");
-        status = ResponseStatus.valueOf(statusStr);
+        this.status = getStatus(props);
     }
 
-    public Map<String, String> getHeaders() {
+    public static Map<String, String> getHeaders(BasicProperties props) {
         Map<String,Object> headers = props.getHeaders();
         if (headers == null) {
             return Collections.emptyMap();
@@ -54,11 +51,20 @@ public class RpcResponse {
         return map;
     }
 
+    public static ResponseStatus getStatus(BasicProperties props) {
+        String statusStr = getHeaders(props).get("status");
+        return ResponseStatus.valueOf(statusStr);
+    }
+
+    public Map<String, String> getHeaders() {
+        return getHeaders(props);
+    }
+
     public ResponseStatus getStatus() {
         return status;
     }
 
-    public MapMessage getBody() {
+    public T getBody() {
         return body;
     }
 }

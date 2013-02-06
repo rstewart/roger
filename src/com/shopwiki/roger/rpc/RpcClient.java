@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.codehaus.jackson.type.TypeReference;
+
 import com.google.common.util.concurrent.AbstractFuture;
 import com.rabbitmq.client.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -28,24 +30,80 @@ import com.shopwiki.roger.*;
 /**
  * Mainly for testing a {@link RpcServer}s.
  *
+ * @param <O> response type
+ *
  * @author rstewart
  */
-public class RpcClient {
+public class RpcClient<O> {
 
     private static final boolean DEBUG = MessagingUtil.DEBUG;
 
     private final Channel channel;
     private final Route requestRoute;
+    private final TypeReference<O> responseType;
     private final boolean exceptionsAsJson;
 
     private final String responseQueueName;
 
-    private final Map<String,RpcFuture> idToFuture = new ConcurrentHashMap<String,RpcFuture>();
+    // TODO: Make this a Guava Cache with TTLs on the entries ???
+    private final Map<String,RpcFuture<O>> idToFuture = new ConcurrentHashMap<String,RpcFuture<O>>();
 
-    public RpcClient(Channel channel, Route requestRoute, Map<String,Object> responseQueueArgs, boolean exceptionsAsJson) throws IOException {
+    /**
+     * Create an RpcClient that returns all responses as MapMessages.
+     *
+     * @param channel
+     * @param requestRoute
+     * @param responseQueueArgs
+     * @param exceptionAsJson
+     * @return
+     * @throws IOException
+     */
+    public static RpcClient<MapMessage> create(
+            Channel channel,
+            Route requestRoute,
+            Map<String,Object> responseQueueArgs,
+            boolean exceptionAsJson
+            ) throws IOException {
+
+        return new RpcClient<MapMessage>(channel, requestRoute, responseQueueArgs, MapMessage.TYPE_REF, exceptionAsJson);
+    }
+
+    /**
+     * Create an RpcClient that returns responses using the supplied responseType.
+     *
+     * @param channel
+     * @param requestRoute
+     * @param responseQueueArgs
+     * @param responseType
+     * @return
+     * @throws IOException
+     */
+    public static <O> RpcClient<O> create(
+            Channel channel,
+            Route requestRoute,
+            Map<String,Object> responseQueueArgs,
+            TypeReference<O> responseType
+            ) throws IOException {
+
+        return new RpcClient<O>(channel, requestRoute, responseQueueArgs, responseType, false);
+    }
+
+    private RpcClient(
+            Channel channel,
+            Route requestRoute,
+            Map<String,Object> responseQueueArgs,
+            TypeReference<O> responseType,
+            boolean exceptionsAsJson
+            ) throws IOException {
+
         this.channel = channel;
         this.requestRoute = requestRoute;
+        this.responseType = responseType;
         this.exceptionsAsJson = exceptionsAsJson;
+
+        if (exceptionsAsJson && ! responseType.getType().equals(MapMessage.TYPE_REF.getType())) {
+            throw new IllegalArgumentException("Can't have exceptionsAsJson unless your responseType is MapMessage!");
+        }
 
         responseQueueName = QueueUtil.declareAnonymousQueue(channel, responseQueueArgs).getQueue();
         Consumer responseConsumer = new ResponseConsumer(channel);
@@ -60,18 +118,9 @@ public class RpcClient {
 
         @Override
         public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties props, byte[] body) throws IOException {
+            // AUTO-ACKING
 
-            MapMessage message = MessagingUtil.getDeliveryBody(body, MapMessage.TYPE_REF);
-
-            if (DEBUG) {
-                System.out.println("*** ResponseConsumer RECEIVED RESPONSE ***");
-                System.out.println("*** consumerTag: " + consumerTag);
-                System.out.println("*** envelope:\n" + MessagingUtil.prettyPrint(envelope));
-                System.out.println("*** properties:\n" + MessagingUtil.prettyPrint(props));
-                System.out.println("*** response: " + MessagingUtil.prettyPrintMessage(message));
-            }
-
-            RpcFuture future = idToFuture.remove(props.getCorrelationId());
+            RpcFuture<O> future = idToFuture.remove(props.getCorrelationId());
             if (future == null) {
                 System.err.println("### Received a response not meant for me! ###");
                 System.err.println("### " + MessagingUtil.prettyPrint(props));
@@ -79,12 +128,27 @@ public class RpcClient {
                 return;
             }
 
-            RpcResponse response = new RpcResponse(props, message);
+            ResponseStatus status = RpcResponse.getStatus(props);
 
-            if (exceptionsAsJson) {
-                future.complete(response); // return JSON regardless of the status
+            final Object debugMessage;
+
+            if (status == ResponseStatus.OK || exceptionsAsJson) {
+                O message = MessagingUtil.getDeliveryBody(body, responseType);
+                debugMessage = message;
+                RpcResponse<O> response = new RpcResponse<O>(props, message);
+                future.complete(response);
             } else {
-                future.completeExcept(response);
+                MapMessage message = MessagingUtil.getDeliveryBody(body, MapMessage.TYPE_REF);
+                debugMessage = message;
+                future.completeException(status, message);
+            }
+
+            if (DEBUG) {
+                System.out.println("*** ResponseConsumer RECEIVED RESPONSE ***");
+                System.out.println("*** consumerTag: " + consumerTag);
+                System.out.println("*** envelope:\n" + MessagingUtil.prettyPrint(envelope));
+                System.out.println("*** properties:\n" + MessagingUtil.prettyPrint(props));
+                System.out.println("*** response: " + MessagingUtil.prettyPrintMessage(debugMessage));
             }
         }
     }
@@ -92,32 +156,26 @@ public class RpcClient {
     /**
      * @param request
      * @return response
-     * @throws IOException Only if exceptionsAsJson is set to true.
+     * @throws IOException
      */
-    public Future<RpcResponse> sendRequest(Object request) throws IOException {
+    public Future<RpcResponse<O>> sendRequest(Object request) throws IOException {
         String id = java.util.UUID.randomUUID().toString();
-        RpcFuture future = new RpcFuture();
+        RpcFuture<O> future = new RpcFuture<O>();
         idToFuture.put(id, future);
         MessagingUtil.sendRequest(channel, requestRoute, request, responseQueueName, id);
         return future;
     }
 
-    private static class RpcFuture extends AbstractFuture<RpcResponse> {
-        private void complete(RpcResponse response) {
+    private static class RpcFuture<T> extends AbstractFuture<RpcResponse<T>> {
+        void complete(RpcResponse<T> response) {
             set(response);
         }
 
-        private void completeExcept(RpcResponse response) {
-            ResponseStatus status = response.getStatus();
-            if (status == ResponseStatus.OK) {
-                set(response);
-            } else {
-                MapMessage body = response.getBody();
-                String exceptionName = (String)body.get("exceptionName");
-                String exceptionMsg  = (String)body.get("exceptionMsg");
-                Exception e = new Exception(status + ": " + exceptionName + "\n" + exceptionMsg);
-                setException(e);
-            }
+        void completeException(ResponseStatus status, MapMessage exceptionResponse) {
+            String exceptionName = (String)exceptionResponse.get("exceptionName");
+            String exceptionMsg  = (String)exceptionResponse.get("exceptionMsg");
+            Exception e = new Exception(status + ": " + exceptionName + "\n" + exceptionMsg);
+            setException(e);
         }
     }
 }
