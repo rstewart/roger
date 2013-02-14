@@ -120,7 +120,11 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
         return conn;
     }
 
-    // TODO: Move this to HessagingHelper ???
+    /**
+     * Close connection if it's not null.
+     * Swallow IOExceptions.
+     * @param conn
+     */
     public static void closeConnection(Connection conn) {
         if (conn == null) {
             return;
@@ -129,7 +133,8 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
         try {
             conn.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            //throw new RuntimeException(e);
         }
     }
 }
