@@ -93,12 +93,24 @@ public class MessageWorker<T> {
      */
     public void start() throws IOException {
         int numThreads = 1; // TODO: Parameterize this (will require multiple channels) ???
-        Connection conn = daemon ? connector.getDaemonConnection(numThreads) : connector.getConnection(numThreads);
-        conn.addShutdownListener(reconnector);
-        channel = conn.createChannel();
+        Connection conn = null;
+        try {
+            conn = daemon ? connector.getDaemonConnection(numThreads) : connector.getConnection(numThreads);
+            conn.addShutdownListener(reconnector);
+            channel = conn.createChannel();
 
-        MessageConsumer<T> consumer = new MessageConsumer<T>(handler, channel, queueArgs, route);
-        consumer.start();
+            MessageConsumer<T> consumer = new MessageConsumer<T>(handler, channel, queueArgs, route);
+            consumer.start();
+        } catch (IOException e) {
+            RabbitConnector.closeConnection(conn);
+            throw e;
+        } catch (RuntimeException e) {
+            RabbitConnector.closeConnection(conn);
+            throw e;
+        } catch (Error e) {
+            RabbitConnector.closeConnection(conn);
+            throw e;
+        }
     }
 
     // TODO: Get rid of this ???

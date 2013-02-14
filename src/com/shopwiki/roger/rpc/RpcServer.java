@@ -19,6 +19,7 @@ package com.shopwiki.roger.rpc;
 import java.io.IOException;
 
 import com.rabbitmq.client.*;
+import com.shopwiki.roger.RabbitConnector;
 import com.shopwiki.roger.RabbitReconnector;
 import com.shopwiki.roger.RabbitReconnector.*;
 
@@ -100,24 +101,36 @@ public class RpcServer {
     public void start() throws IOException {
         RpcWorkers workers = workerFactory.createWorkers(queuePrefix);
 
-        Connection conn = workers.getConnection();
-        conn.addShutdownListener(reconnector);
-        Channel channel = conn.createChannel();
+        Connection conn = null;
+        try {
+            conn = workers.getConnection();
+            conn.addShutdownListener(reconnector);
+            Channel channel = conn.createChannel();
 
-        if (queueDeclarator != null) {
-            for (RpcWorker worker : workers) {
-                queueDeclarator.declareQueue(channel, worker);
-                queueDeclarator.bindQueue(channel, worker);
+            if (queueDeclarator != null) {
+                for (RpcWorker worker : workers) {
+                    queueDeclarator.declareQueue(channel, worker);
+                    queueDeclarator.bindQueue(channel, worker);
+                }
             }
-        }
 
-        for (RpcWorker worker : workers) {
-            worker.setPostProcessors(postProcessors);
-            String queueName = worker.getQueueName();
+            for (RpcWorker worker : workers) {
+                worker.setPostProcessors(postProcessors);
+                String queueName = worker.getQueueName();
 
-            System.out.println(channel + " - Starting Worker for queue: " + queueName);
-            channel.queueDeclarePassive(queueName); // make sure the handler's queue exists
-            worker.start();
+                System.out.println(channel + " - Starting Worker for queue: " + queueName);
+                channel.queueDeclarePassive(queueName); // make sure the handler's queue exists
+                worker.start();
+            }
+        } catch (IOException e) {
+            RabbitConnector.closeConnection(conn);
+            throw e;
+        } catch (RuntimeException e) {
+            RabbitConnector.closeConnection(conn);
+            throw e;
+        } catch (Error e) {
+            RabbitConnector.closeConnection(conn);
+            throw e;
         }
     }
 }

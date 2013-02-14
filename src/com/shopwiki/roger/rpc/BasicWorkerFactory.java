@@ -52,23 +52,36 @@ public class BasicWorkerFactory implements WorkerFactory {
 
     @Override
     public RpcWorkers createWorkers(String queuePrefix) throws IOException {
-        Connection conn = connector.getConnection(numThreads);
+        Connection conn = null;
+        try {
+            conn = connector.getConnection(numThreads);
 
-        List<Channel> channels = new ArrayList<Channel>();
-        for (int i = 0; i < numThreads; i++) {
-            Channel channel = conn.createChannel();
-            channel.basicQos(1);
-            channels.add(channel);
+            List<Channel> channels = new ArrayList<Channel>();
+            for (int i = 0; i < numThreads; i++) {
+                Channel channel = conn.createChannel();
+                channel.basicQos(1);
+                channels.add(channel);
+            }
+
+            RpcWorkers workers = new RpcWorkers(conn);
+
+            for (String procedureName : nameToHandler.keySet()) {
+                RequestHandler<?,?> handler = nameToHandler.get(procedureName);
+                RpcWorker worker = new RpcWorker(handler, channels, queuePrefix, procedureName);
+                workers.add(worker);
+            }
+
+            return workers;
+            // TODO: Figure out a way to do this Exception handling outside of here ???
+        } catch (IOException e) {
+            RabbitConnector.closeConnection(conn);
+            throw e;
+        } catch (RuntimeException e) {
+            RabbitConnector.closeConnection(conn);
+            throw e;
+        } catch (Error e) {
+            RabbitConnector.closeConnection(conn);
+            throw e;
         }
-
-        RpcWorkers workers = new RpcWorkers(conn);
-
-        for (String procedureName : nameToHandler.keySet()) {
-            RequestHandler<?,?> handler = nameToHandler.get(procedureName);
-            RpcWorker worker = new RpcWorker(handler, channels, queuePrefix, procedureName);
-            workers.add(worker);
-        }
-
-        return workers;
     }
 }
