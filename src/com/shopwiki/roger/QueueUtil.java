@@ -17,9 +17,9 @@
 package com.shopwiki.roger;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.AMQP.Queue.DeclareOk;
 
@@ -77,7 +77,7 @@ public class QueueUtil {
 
     private static DeclareOk declareQueue(Channel channel, String queueName, boolean durable, boolean exclusive, boolean autoDelete, Map<String,Object> args) throws IOException {
         if (args == null) {
-            args = Maps.newHashMap();
+            args = Collections.emptyMap();
         }
         return channel.queueDeclare(queueName, durable, exclusive, autoDelete, args);
     }
