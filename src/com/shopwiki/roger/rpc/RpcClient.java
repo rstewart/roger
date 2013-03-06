@@ -45,7 +45,8 @@ public class RpcClient<O> {
 
     private final String responseQueueName;
 
-    // TODO: Make this a Guava Cache with TTLs on the entries ???
+    // TODO: Make this a Guava Cache with TTLs on the entries so we don't leak Futures that never complete ???
+    // Or better yet... make it a Map of WeakReferences, and have a background thread delete keys that no longer have values ???
     private final Map<String,RpcFuture<O>> idToFuture = new ConcurrentHashMap<String,RpcFuture<O>>();
 
     /**
