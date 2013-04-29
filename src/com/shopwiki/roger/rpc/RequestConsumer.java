@@ -145,7 +145,7 @@ public class RequestConsumer<I> extends DefaultConsumer {
             thrown = e;
         } finally {
             if (pps != null) {
-                pps.process(queueName, status, request, response, thrown, timeTaken);
+                pps.process(handler, queueName, status, request, response, thrown, timeTaken);
             }
         }
     }

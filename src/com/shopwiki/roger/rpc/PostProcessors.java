@@ -43,9 +43,11 @@ public class PostProcessors {
          * @throws Exception
          */
         public void process(
+                RequestHandler<?,?> handler,
                 String queueName,
                 ResponseStatus responseStatus,
-                Object request, Object response,
+                Object request,
+                Object response,
                 Throwable thrown,
                 long timeTaken
                 ) throws Exception;
@@ -62,6 +64,7 @@ public class PostProcessors {
      * Called by {@link RequestConsumer} after each request is handled.
      */
     public void process(
+            final RequestHandler<?,?> handler,
             final String queueName,
             final ResponseStatus responseStatus,
             final Object request,
@@ -76,7 +79,7 @@ public class PostProcessors {
             Callable<Void> task = new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
-                    pp.process(queueName, responseStatus, request, response, thrown, timeTaken);
+                    pp.process(handler, queueName, responseStatus, request, response, thrown, timeTaken);
                     return null;
                 }
             };
