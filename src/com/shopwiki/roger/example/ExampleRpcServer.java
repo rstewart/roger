@@ -78,12 +78,13 @@ public class ExampleRpcServer {
             @Override
             public void declareQueue(Channel channel, RpcWorker worker) throws IOException {
                 Map<String,Object> queueArgs = null;
-                QueueUtil.declareNamedQueue(channel, worker.getQueueName(), queueArgs);
+                QueueUtil.declarePermQueue(channel, worker.getQueueName(), queueArgs);
             }
 
             @Override
             public void bindQueue(Channel channel, RpcWorker worker) throws IOException {
                 // Not using any routing-key
+                channel.queueBind(worker.getQueueName(), "example-exchange", "example-rpc-routing-key");
             }
         };
 

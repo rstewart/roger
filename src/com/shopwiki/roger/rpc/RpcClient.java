@@ -47,6 +47,7 @@ public class RpcClient<O> {
 
     // TODO: Make this a Guava Cache with TTLs on the entries so we don't leak Futures that never complete ???
     // Or better yet... make it a Map of WeakReferences, and have a background thread delete keys that no longer have values ???
+    // Or best... use Guava CacheBuilder ???
     private final Map<String,RpcFuture<O>> idToFuture = new ConcurrentHashMap<String,RpcFuture<O>>();
 
     /**
@@ -102,7 +103,7 @@ public class RpcClient<O> {
             throw new IllegalArgumentException("Can't have exceptionsAsJson unless your responseType is MapMessage!");
         }
 
-        responseQueueName = QueueUtil.declareAnonymousQueue(channel, responseQueueArgs).getQueue();
+        responseQueueName = QueueUtil.declareTempQueue(channel, "Roger-RpcClient", responseQueueArgs).getQueue();
         Consumer responseConsumer = new ResponseConsumer(channel);
         channel.basicConsume(responseQueueName, true, responseConsumer);
     }
@@ -156,7 +157,7 @@ public class RpcClient<O> {
      * @throws IOException
      */
     public Future<RpcResponse<O>> sendRequest(Object request) throws IOException {
-        String id = java.util.UUID.randomUUID().toString();
+        String id = UUID.randomUUID().toString();
         RpcFuture<O> future = new RpcFuture<O>();
         idToFuture.put(id, future);
         MessagingUtil.sendRequest(channel, requestRoute, request, responseQueueName, id);

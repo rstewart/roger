@@ -19,6 +19,7 @@ package com.shopwiki.roger;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.AMQP.Queue.DeclareOk;
@@ -35,40 +36,36 @@ public class QueueUtil {
     private QueueUtil() { }
 
     /**
-     * Used by RPC clients (e.g. {@link com.shopwiki.roger.rpc.RpcClient}).
+     * Used by RPC clients (e.g. {@link com.shopwiki.roger.rpc.RpcClient})
+     * and event consumers (e.g. {@link com.shopwiki.roger.event.MessageConsumers}.
      *
      * Same behavior as com.rabbitmq.client.impl.ChannelN.queueDeclare():
      * Non-durable,
      * exclusive,
      * auto-delete.
      */
-    public static DeclareOk declareAnonymousQueue(Channel channel, Map<String,Object> args) throws IOException {
-        final String queueName = "";
-        return declareTempQueue(channel, queueName, args);
-    }
+    public static DeclareOk declareTempQueue(Channel channel, String queuePrefix, Map<String,Object> args) throws IOException {
+        final String queueName;
+        if (queuePrefix == null || queuePrefix.isEmpty()) {
+            queueName = "";
+        } else {
+            queueName = queuePrefix + "-" + UUID.randomUUID().toString();
+        }
 
-    /**
-     * Used by temporary (i.e. for testing) {@link com.shopwiki.roger.rpc.RpcServer}s.
-     *
-     * Non-durable,
-     * exclusive,
-     * auto-delete.
-     */
-    public static DeclareOk declareTempQueue(Channel channel, String queueName, Map<String,Object> args) throws IOException {
         final boolean durable = false;
-        final boolean exclusive = queueName.equals("");
+        final boolean exclusive = true;
         final boolean autoDelete = true;
         return declareQueue(channel, queueName, durable, exclusive, autoDelete, args);
     }
 
     /**
-     * Used by permanent (i.e. production) RpcServers.
+     * Used by {@link com.shopwiki.roger.rpc.RpcServer}s.
      *
      * Durable,
      * non-exclusive,
      * non-auto-delete.
      */
-    public static DeclareOk declareNamedQueue(Channel channel, String queueName, Map<String,Object> args) throws IOException {
+    public static DeclareOk declarePermQueue(Channel channel, String queueName, Map<String,Object> args) throws IOException {
         final boolean durable = true; // TODO: make configurable ???
         final boolean exclusive = false;
         final boolean autoDelete = false;

@@ -51,7 +51,15 @@ public class MessageConsumer<T> extends DefaultConsumer {
         this.messageType = handler.getMessageType();
         this.channel = channel;
         this.route = route;
-        this.queueName = QueueUtil.declareAnonymousQueue(channel, queueArgs).getQueue();
+        String queuePrefix = routeToQueuePrefix(route);
+        this.queueName = QueueUtil.declareTempQueue(channel, queuePrefix, queueArgs).getQueue();
+    }
+
+    private static String routeToQueuePrefix(Route route) {
+        if (route.exchange == null || route.exchange.isEmpty()) {
+            return route.key;
+        }
+        return route.exchange + "-" + route.key;
     }
 
     public String getQueueName() {
