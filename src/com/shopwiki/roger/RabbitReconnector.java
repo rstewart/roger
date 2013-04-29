@@ -58,14 +58,26 @@ public class RabbitReconnector implements ShutdownListener, Runnable {
         run();
     }
 
+    private volatile long timeLastRun = System.currentTimeMillis();
+
     @Override
-    public void run() {
+    public synchronized void run() {
         System.err.println(TimeUtil.now() + " Attempting to reconnect to RabbitMQ...");
+        long millisBeforeRetry = secondsBeforeRetry * 1000;
         int attempt = 0;
 
         while (true) {
             attempt++;
+
+            long millisSinceLastTry = System.currentTimeMillis() - timeLastRun;
+            long millisToWait = millisBeforeRetry - millisSinceLastTry;
+            if (millisToWait > 0) {
+                System.err.println(TimeUtil.now() + " RabbitMQ reconnect # " + attempt + " too soon!  Waiting for " + millisToWait + " millis...");
+                sleep(millisToWait);
+            }
+
             try {
+                timeLastRun = System.currentTimeMillis();
                 if (handler.reconnect()) {
                     System.err.println(TimeUtil.now() + " RabbitMQ reconnect # " + attempt + " SUCCEEDED!");
                     return;
@@ -78,11 +90,15 @@ public class RabbitReconnector implements ShutdownListener, Runnable {
                 logger.log(attempt);
             }
             System.err.println(TimeUtil.now() + " RabbitMQ reconnect # " + attempt + " FAILED!  Retrying in " + secondsBeforeRetry + " seconds...");
-            try {
-                Thread.sleep(secondsBeforeRetry * 1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            sleep(millisBeforeRetry);
+        }
+    }
+
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            //throw new RuntimeException(e);
         }
     }
 }
