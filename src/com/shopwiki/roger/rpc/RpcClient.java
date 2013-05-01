@@ -103,7 +103,7 @@ public class RpcClient<O> {
             throw new IllegalArgumentException("Can't have exceptionsAsJson unless your responseType is MapMessage!");
         }
 
-        responseQueueName = QueueUtil.declareTempQueue(channel, "Roger-RpcClient", responseQueueArgs).getQueue();
+        responseQueueName = QueueUtil.declareAnonymousQueue(channel, "Roger-RpcClient", responseQueueArgs).getQueue();
         Consumer responseConsumer = new ResponseConsumer(channel);
         channel.basicConsume(responseQueueName, true, responseConsumer);
     }

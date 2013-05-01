@@ -52,7 +52,7 @@ public class MessageConsumer<T> extends DefaultConsumer {
         this.channel = channel;
         this.route = route;
         String queuePrefix = routeToQueuePrefix(route);
-        this.queueName = QueueUtil.declareTempQueue(channel, queuePrefix, queueArgs).getQueue();
+        this.queueName = QueueUtil.declareAnonymousQueue(channel, queuePrefix, queueArgs).getQueue();
     }
 
     private static String routeToQueuePrefix(Route route) {
