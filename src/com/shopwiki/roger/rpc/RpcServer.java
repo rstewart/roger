@@ -54,7 +54,7 @@ public class RpcServer {
     }
 
     private final WorkerFactory workerFactory;
-    private final String queuePrefix;
+    public final String queuePrefix;
     private final QueueDeclarator queueDeclarator;
     private final PostProcessors postProcessors;
     private final RabbitReconnector reconnector;
