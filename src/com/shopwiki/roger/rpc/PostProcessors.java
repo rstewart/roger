@@ -34,6 +34,7 @@ public class PostProcessors {
      */
     public static interface PostProcessor {
         /**
+         * @param handler
          * @param queueName
          * @param responseStatus
          * @param request
