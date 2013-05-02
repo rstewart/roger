@@ -52,18 +52,20 @@ public class QueueUtil {
             queueName = queuePrefix + "-" + UUID.randomUUID().toString();
         }
 
-        return declareTempQueue(channel, queueName, args);
+        final boolean durable = false;
+        final boolean exclusive = true;
+        final boolean autoDelete = true;
+        return declareQueue(channel, queueName, durable, exclusive, autoDelete, args);
     }
 
     /**
-     * Same behavior as com.rabbitmq.client.impl.ChannelN.queueDeclare():
      * Non-durable,
-     * exclusive,
+     * non-exclusive,
      * auto-delete.
      */
     public static DeclareOk declareTempQueue(Channel channel, String queueName, Map<String,Object> args) throws IOException {
         final boolean durable = false;
-        final boolean exclusive = true;
+        final boolean exclusive = false;
         final boolean autoDelete = true;
         return declareQueue(channel, queueName, durable, exclusive, autoDelete, args);
     }
