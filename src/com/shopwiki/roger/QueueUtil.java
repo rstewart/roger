@@ -37,7 +37,7 @@ public class QueueUtil {
 
     /**
      * Used by RPC clients (e.g. {@link com.shopwiki.roger.rpc.RpcClient})
-     * and event consumers (e.g. {@link com.shopwiki.roger.event.MessageConsumers}.
+     * and event consumers (e.g. {@link com.shopwiki.roger.event.MessageConsumer}s).
      *
      * Same behavior as com.rabbitmq.client.impl.ChannelN.queueDeclare():
      * Non-durable,
