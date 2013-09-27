@@ -48,10 +48,10 @@ public class ExampleRpcServer {
     }
 
     private static final Address address = new Address("localhost");
+
     public static final RabbitConnector connector = new RabbitConnector(address);
 
-    public static void main(String[] args) throws Exception {
-
+    public static final RpcServer createRpcServer() {
         RequestHandler<Request, Response> handler = new RequestHandler<Request, Response>() {
             @Override
             public TypeReference<Request> getRequestType() {
@@ -83,7 +83,6 @@ public class ExampleRpcServer {
 
             @Override
             public void bindQueue(Channel channel, RpcWorker worker) throws IOException {
-                // Not using any routing-key
                 channel.queueBind(worker.getQueueName(), "example-exchange", "example-rpc-routing-key");
             }
         };
@@ -92,7 +91,11 @@ public class ExampleRpcServer {
         PostProcessors postProcessors = null;
         ReconnectLogger reconnectLogger = null;
 
-        RpcServer server = new RpcServer(factory, queuePrefix, queueDeclarator, postProcessors, reconnectLogger);
+        return new RpcServer(factory, queuePrefix, queueDeclarator, postProcessors, reconnectLogger);
+    }
+
+    public static void main(String[] args) throws Exception {
+        RpcServer server = createRpcServer();
         server.start();
     }
 }

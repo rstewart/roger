@@ -38,7 +38,7 @@ import com.shopwiki.roger.rpc.RpcResponse;
  */
 public class ExampleRpcClient {
 
-    public static void main(String[] args) throws Exception {
+    public static RpcResponse<Response> sendRequest(String name) throws Exception {
         Connection conn = ExampleRpcServer.connector.getDaemonConnection(1);
         Channel channel = conn.createChannel();
         Route route = new Route("", "RpcExample_HelloWorld");
@@ -48,11 +48,16 @@ public class ExampleRpcClient {
         RpcClient<Response> client = RpcClient.create(channel, route, queueArgs, responseType);
 
         Request request = new Request();
-        request.name = "Robert";
+        request.name = name;
 
         Future<RpcResponse<Response>> future = client.sendRequest(request);
         RpcResponse<Response> response = future.get(5, TimeUnit.SECONDS);
 
+        return response;
+    }
+
+    public static void main(String[] args) throws Exception {
+        RpcResponse<Response> response = sendRequest("Robert");
         System.out.println("HEADERS:\n" + response.getHeaders());
         System.out.println();
         System.out.println("BODY:\n" + MessagingUtil.prettyPrintMessage(response.getBody()));
