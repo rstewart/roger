@@ -83,7 +83,9 @@ public class ExampleRpcServer {
 
             @Override
             public void bindQueue(Channel channel, RpcWorker worker) throws IOException {
-                channel.queueBind(worker.getQueueName(), "example-exchange", "example-rpc-routing-key");
+                String exchange = "example-exchange";
+                channel.exchangeDeclare(exchange, "topic");
+                channel.queueBind(worker.getQueueName(), exchange, "example-rpc-routing-key");
             }
         };
 
