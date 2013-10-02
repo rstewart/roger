@@ -44,11 +44,9 @@ public class ExampleRpcClient {
         try {
             conn = ExampleRpcServer.connector.getDaemonConnection(1);
             Channel channel = conn.createChannel();
-            Route route = new Route("", "RpcExample_HelloWorld");
             Map<String,Object> queueArgs = null;
-
             TypeReference<Response> responseType = new TypeReference<Response>() { };
-            RpcClient<Response> client = RpcClient.create(channel, route, queueArgs, responseType);
+            RpcClient<Response> client = RpcClient.create(channel, ExampleRpcServer.ROUTE, queueArgs, responseType);
 
             Request request = new Request();
             request.name = name;

@@ -51,6 +51,8 @@ public class ExampleRpcServer {
 
     public static final RabbitConnector connector = new RabbitConnector(address);
 
+    public static final Route ROUTE = new Route("example-exchange", "example-rpc-routing-key");
+
     public static final RpcServer createRpcServer() {
         RequestHandler<Request, Response> handler = new RequestHandler<Request, Response>() {
             @Override
@@ -83,9 +85,8 @@ public class ExampleRpcServer {
 
             @Override
             public void bindQueue(Channel channel, RpcWorker worker) throws IOException {
-                String exchange = "example-exchange";
-                channel.exchangeDeclare(exchange, "topic");
-                channel.queueBind(worker.getQueueName(), exchange, "example-rpc-routing-key");
+                channel.exchangeDeclare(ROUTE.exchange, "topic");
+                channel.queueBind(worker.getQueueName(), ROUTE.exchange, ROUTE.key);
             }
         };
 
