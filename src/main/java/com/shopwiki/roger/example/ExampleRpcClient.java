@@ -25,6 +25,7 @@ import org.codehaus.jackson.type.TypeReference;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.shopwiki.roger.MessagingUtil;
+import com.shopwiki.roger.RabbitConnector;
 import com.shopwiki.roger.Route;
 import com.shopwiki.roger.example.ExampleRpcServer.Request;
 import com.shopwiki.roger.example.ExampleRpcServer.Response;
@@ -39,21 +40,28 @@ import com.shopwiki.roger.rpc.RpcResponse;
 public class ExampleRpcClient {
 
     public static RpcResponse<Response> sendRequest(String name) throws Exception {
-        Connection conn = ExampleRpcServer.connector.getDaemonConnection(1);
-        Channel channel = conn.createChannel();
-        Route route = new Route("", "RpcExample_HelloWorld");
-        Map<String,Object> queueArgs = null;
+        Connection conn = null;
+        try {
+            conn = ExampleRpcServer.connector.getDaemonConnection(1);
+            Channel channel = conn.createChannel();
+            Route route = new Route("", "RpcExample_HelloWorld");
+            Map<String,Object> queueArgs = null;
 
-        TypeReference<Response> responseType = new TypeReference<Response>() { };
-        RpcClient<Response> client = RpcClient.create(channel, route, queueArgs, responseType);
+            TypeReference<Response> responseType = new TypeReference<Response>() { };
+            RpcClient<Response> client = RpcClient.create(channel, route, queueArgs, responseType);
 
-        Request request = new Request();
-        request.name = name;
+            Request request = new Request();
+            request.name = name;
 
-        Future<RpcResponse<Response>> future = client.sendRequest(request);
-        RpcResponse<Response> response = future.get(5, TimeUnit.SECONDS);
-
-        return response;
+            Future<RpcResponse<Response>> future = client.sendRequest(request);
+            return future.get(5, TimeUnit.SECONDS);
+        } finally {
+            // If we didn't close the connection, it leaves a non-daemon thread running,
+            // even though we are explicitly using the DaemonThreadFactory!
+            // But... this only happens if the RabbitMQ server version is 3.x (doesn't happen if server is 2.x)!
+            // Upgrading the Java driver from 2.7.1 to 3.1.4 does NOT seem to matter.
+            RabbitConnector.closeConnection(conn);
+        }
     }
 
     public static void main(String[] args) throws Exception {
