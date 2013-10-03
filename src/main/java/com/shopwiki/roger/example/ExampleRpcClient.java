@@ -26,7 +26,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.shopwiki.roger.MessagingUtil;
 import com.shopwiki.roger.RabbitConnector;
-import com.shopwiki.roger.Route;
 import com.shopwiki.roger.example.ExampleRpcServer.Request;
 import com.shopwiki.roger.example.ExampleRpcServer.Response;
 import com.shopwiki.roger.rpc.RpcClient;
