@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.codehaus.jackson.type.TypeReference;
 
-import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Channel;
 import com.shopwiki.roger.*;
 import com.shopwiki.roger.RabbitReconnector.ReconnectLogger;
@@ -47,11 +46,7 @@ public class ExampleRpcServer {
         public String greeting;
     }
 
-    private static final Address address = new Address("localhost");
-
-    public static final RabbitConnector connector = new RabbitConnector(address);
-
-    public static final Route ROUTE = new Route("example-exchange", "example-rpc-routing-key");
+    public static final Route ROUTE = new Route(ExampleConstants.EXCHANGE, "example-rpc-routing-key");
 
     public static final RpcServer createRpcServer() {
         RequestHandler<Request, Response> handler = new RequestHandler<Request, Response>() {
@@ -68,7 +63,7 @@ public class ExampleRpcServer {
             }
         };
 
-        BasicWorkerFactory factory = new BasicWorkerFactory(connector, 2);
+        BasicWorkerFactory factory = new BasicWorkerFactory(ExampleConstants.CONNECTOR, 2);
         factory.addHandler("HelloWorld", handler);
 
         /*

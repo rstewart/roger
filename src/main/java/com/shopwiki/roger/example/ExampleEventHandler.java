@@ -18,7 +18,6 @@ package com.shopwiki.roger.example;
 
 import org.codehaus.jackson.type.TypeReference;
 
-import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.shopwiki.roger.*;
@@ -32,9 +31,7 @@ import com.shopwiki.roger.event.MessageWorker;
  */
 public class ExampleEventHandler {
 
-    private static final Address address = new Address("localhost");
-    public static final RabbitConnector connector = new RabbitConnector(address);
-    public static final Route route = new Route("events", "names");
+    public static final Route ROUTE = new Route(ExampleConstants.EXCHANGE, "example-event-routing-key");
 
     public static void main(String[] args) throws Exception {
 
@@ -52,15 +49,15 @@ public class ExampleEventHandler {
 
         // Create the exchange if it doesn't exist.
         {
-            Connection conn = connector.getConnection(1);
+            Connection conn = ExampleConstants.CONNECTOR.getConnection(1);
             Channel channel = conn.createChannel();
-            channel.exchangeDeclare(route.exchange, "topic");
+            channel.exchangeDeclare(ROUTE.exchange, "topic");
             conn.close();
         }
 
         boolean daemon = false;
 
-        MessageWorker<String> worker = new MessageWorker<String>(connector, handler, route, daemon);
+        MessageWorker<String> worker = new MessageWorker<String>(ExampleConstants.CONNECTOR, handler, ROUTE, daemon);
         worker.start();
     }
 }

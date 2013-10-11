@@ -16,20 +16,17 @@
 
 package com.shopwiki.roger.example;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.shopwiki.roger.MessagingUtil;
+import com.rabbitmq.client.Address;
+import com.shopwiki.roger.RabbitConnector;
 
 /**
- * Run this main after {@link ExampleEventHandler}.
- *
- * @author rstewart
+ * @owner rtewart
  */
-public class ExampleEventSender {
+public class ExampleConstants {
 
-    public static void main(String[] args) throws Exception {
-        Connection conn = ExampleConstants.CONNECTOR.getDaemonConnection(1);
-        Channel channel = conn.createChannel();
-        MessagingUtil.sendMessage(channel, ExampleEventHandler.ROUTE, "Robert");
-    }
+    private static final Address ADDRESS = new Address("localhost");
+
+    public static final RabbitConnector CONNECTOR = new RabbitConnector(ADDRESS);
+
+    public static final String EXCHANGE = "example-exchange";
 }
