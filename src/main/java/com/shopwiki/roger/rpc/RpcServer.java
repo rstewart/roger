@@ -17,11 +17,13 @@
 package com.shopwiki.roger.rpc;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
 
 import com.rabbitmq.client.*;
 import com.shopwiki.roger.RabbitConnector;
 import com.shopwiki.roger.RabbitReconnector;
 import com.shopwiki.roger.RabbitReconnector.*;
+import com.shopwiki.roger.util.TimeUtil;
 
 /**
  * The main entry point for creating & starting an RPC server using Roger.
@@ -83,12 +85,11 @@ public class RpcServer {
         ReconnectHandler reconnectHandler = new ReconnectHandler() {
             @Override
             public boolean reconnect() throws Exception {
-                start();
-                return true;
+                return _start();
             }
         };
 
-        reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, 1);
+        reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, 1); // TODO: Make this configurable ???
     }
 
     /**
@@ -98,13 +99,17 @@ public class RpcServer {
      *
      * @throws IOException
      */
-    public void start() throws IOException {
-        RpcWorkers workers = workerFactory.createWorkers(queuePrefix);
+    public void start() {
+        if (_start() == false) {
+            Executors.newSingleThreadExecutor().execute(reconnector);
+        }
+    }
 
+    private boolean _start() {
         Connection conn = null;
         try {
+            RpcWorkers workers = workerFactory.createWorkers(queuePrefix);
             conn = workers.getConnection();
-            conn.addShutdownListener(reconnector);
             Channel channel = conn.createChannel();
 
             if (queueDeclarator != null) {
@@ -122,15 +127,14 @@ public class RpcServer {
                 channel.queueDeclarePassive(queueName); // make sure the handler's queue exists
                 worker.start();
             }
-        } catch (IOException e) {
-            RabbitConnector.closeConnection(conn);
-            throw e;
-        } catch (RuntimeException e) {
-            RabbitConnector.closeConnection(conn);
-            throw e;
-        } catch (Error e) {
-            RabbitConnector.closeConnection(conn);
-            throw e;
+
+            conn.addShutdownListener(reconnector);
+            return true;
+        } catch (Throwable t) {
+            System.err.println(TimeUtil.now() + " ERROR starting RpcServer:");
+            t.printStackTrace();
+            RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
+            return false;
         }
     }
 }

@@ -88,27 +88,29 @@ public class MessageWorker<T> {
 
     private volatile Channel channel;
 
+    // TODO: Should this have an inner _start() method that returns a boolean (like in RpcServer) ???
     /**
      * Call this to start consuming & handling messages.
      */
     public void start() throws IOException {
-        int numThreads = 1; // TODO: Parameterize this (will require multiple channels) ???
+        int numThreads = 1; // TODO: Parameterize this ??? (will require multiple channels)
         Connection conn = null;
         try {
             conn = daemon ? connector.getDaemonConnection(numThreads) : connector.getConnection(numThreads);
-            conn.addShutdownListener(reconnector);
             channel = conn.createChannel();
 
             MessageConsumer<T> consumer = new MessageConsumer<T>(handler, channel, queueArgs, route);
             consumer.start();
+
+            conn.addShutdownListener(reconnector);
         } catch (IOException e) {
-            RabbitConnector.closeConnection(conn);
+            RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
             throw e;
         } catch (RuntimeException e) {
-            RabbitConnector.closeConnection(conn);
+            RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
             throw e;
         } catch (Error e) {
-            RabbitConnector.closeConnection(conn);
+            RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
             throw e;
         }
     }

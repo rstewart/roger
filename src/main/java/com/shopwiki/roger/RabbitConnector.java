@@ -126,8 +126,23 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
      * @param conn
      */
     public static void closeConnection(Connection conn) {
+        closeConnectionAndRemoveReconnector(conn, null);
+    }
+
+    /**
+     * Remove RabbitReconnector if it's not null (to prevent reconnect).
+     * Close connection if it's not null.
+     * Swallow IOExceptions.
+     * @param conn
+     * @param reconnector
+     */
+    public static void closeConnectionAndRemoveReconnector(Connection conn, RabbitReconnector reconnector) {
         if (conn == null) {
             return;
+        }
+
+        if (reconnector != null) {
+            conn.removeShutdownListener(reconnector);
         }
 
         try {
