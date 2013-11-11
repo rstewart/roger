@@ -20,7 +20,7 @@ import com.rabbitmq.client.Address;
 import com.shopwiki.roger.RabbitConnector;
 
 /**
- * @owner rtewart
+ * @author rtewart
  */
 public class ExampleConstants {
 

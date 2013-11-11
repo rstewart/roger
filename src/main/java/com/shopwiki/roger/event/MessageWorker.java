@@ -39,12 +39,10 @@ public class MessageWorker { // TODO: This class isn't really necessary since Me
     private final Route route;
 
     /**
-     * @param connector
      * @param handler
+     * @param channels
      * @param queueArgs
      * @param route
-     * @param reconnectLogger
-     * @param daemon
      */
     public MessageWorker(
             MessageHandler<?> handler,
