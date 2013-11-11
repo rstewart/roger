@@ -33,7 +33,7 @@ public class ExampleEventSender {
     public static void sendEvent() throws IOException {
         Connection conn = null;
         try {
-            conn = ExampleConstants.CONNECTOR.getConnection(1);
+            conn = ExampleConstants.CONNECTOR.newConnection(1);
             Channel channel = conn.createChannel();
             MessagingUtil.sendMessage(channel, ExampleEventHandler.ROUTE, "Robert");
         } finally {

@@ -90,7 +90,7 @@ public class MessagingManager {
     private synchronized boolean _start() {
         try {
             System.out.print(TimeUtil.now() + " Starting MessagingManager: ");
-            conn = connector.getDaemonConnection(numThreads); // TODO: Should have the option for non-daemon ???
+            conn = connector.newDaemonConnection(numThreads); // TODO: Should have the option for non-daemon ???
             channels = createChannels(conn, numThreads);
             System.out.println(conn + " with " + channels.size() + " channels.");
 

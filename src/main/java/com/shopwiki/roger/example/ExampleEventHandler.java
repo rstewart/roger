@@ -58,7 +58,7 @@ public class ExampleEventHandler {
     public static void declareExchange() throws IOException {
         Connection conn = null;
         try {
-            conn = ExampleConstants.CONNECTOR.getConnection(1);
+            conn = ExampleConstants.CONNECTOR.newConnection(1);
             Channel channel = conn.createChannel();
             channel.exchangeDeclare(ROUTE.exchange, "topic");
         } finally {

@@ -57,7 +57,7 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
         @Override
         public void run() {
             try {
-                conn = _getConnection(numThreads);
+                conn = _newConnection(numThreads);
             } catch (IOException e) {
                 ioe = e;
             }
@@ -75,7 +75,7 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
      * @return A RabbitMQ Connection that uses daemon Threads (regardless of where it's called from).
      * @throws IOException
      */
-    public Connection getDaemonConnection(final int numThreads) throws IOException {
+    public Connection newDaemonConnection(final int numThreads) throws IOException {
         ConnectDaemon tempThread = new ConnectDaemon(numThreads);
         tempThread.start();
         try {
@@ -97,13 +97,13 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
      * @return A RabbitMQ Connection whose Threads inherit their daemon-status from the calling Thread.
      * @throws IOException
      */
-    public Connection getConnection(int numThreads) throws IOException {
-        Connection conn = _getConnection(numThreads);
+    public Connection newConnection(int numThreads) throws IOException {
+        Connection conn = _newConnection(numThreads);
         if (DEBUG) { System.out.println("*** Connected to RabbitMQ: " + conn); }
         return conn;
     }
 
-    private Connection _getConnection(int numThreads) throws IOException {
+    private Connection _newConnection(int numThreads) throws IOException {
         ConnectionFactory connFactory = new ConnectionFactory();
         ThreadFactory threadFactory = DaemonThreadFactory.getInstance("RabbitMQ-ConsumerThread", true);
         final ExecutorService executor = Executors.newFixedThreadPool(numThreads, threadFactory);

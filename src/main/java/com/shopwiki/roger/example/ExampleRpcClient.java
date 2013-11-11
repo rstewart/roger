@@ -41,7 +41,7 @@ public class ExampleRpcClient {
     public static RpcResponse<Response> sendRequest(String name) throws Exception {
         Connection conn = null;
         try {
-            conn = ExampleConstants.CONNECTOR.getDaemonConnection(1);
+            conn = ExampleConstants.CONNECTOR.newDaemonConnection(1);
             Channel channel = conn.createChannel();
             Map<String,Object> queueArgs = null;
             TypeReference<Response> responseType = new TypeReference<Response>() { };
