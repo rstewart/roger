@@ -16,9 +16,12 @@
 
 package com.shopwiki.roger.example;
 
+import java.io.IOException;
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.shopwiki.roger.MessagingUtil;
+import com.shopwiki.roger.RabbitConnector;
 
 /**
  * Run this main after {@link ExampleEventHandler}.
@@ -27,9 +30,19 @@ import com.shopwiki.roger.MessagingUtil;
  */
 public class ExampleEventSender {
 
+    public static void sendEvent() throws IOException {
+        Connection conn = null;
+        try {
+            conn = ExampleConstants.CONNECTOR.getConnection(1);
+            Channel channel = conn.createChannel();
+            MessagingUtil.sendMessage(channel, ExampleEventHandler.ROUTE, "Robert");
+        } finally {
+            RabbitConnector.closeConnection(conn);
+        }
+        System.out.println("ExampleEventSender DONE!");
+    }
+
     public static void main(String[] args) throws Exception {
-        Connection conn = ExampleConstants.CONNECTOR.getDaemonConnection(1);
-        Channel channel = conn.createChannel();
-        MessagingUtil.sendMessage(channel, ExampleEventHandler.ROUTE, "Robert");
+        sendEvent();
     }
 }

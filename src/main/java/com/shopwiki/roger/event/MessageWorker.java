@@ -17,14 +17,13 @@
 package com.shopwiki.roger.event;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableList;
 import com.rabbitmq.client.*;
 import com.shopwiki.roger.MessagingUtil;
-import com.shopwiki.roger.RabbitConnector;
-import com.shopwiki.roger.RabbitReconnector;
 import com.shopwiki.roger.Route;
-import com.shopwiki.roger.RabbitReconnector.*;
 
 /**
  * A glue class that packages together a {@link MessageHandler} and the RabbitMQ plumbing needed to use it.
@@ -32,24 +31,12 @@ import com.shopwiki.roger.RabbitReconnector.*;
  *
  * @author rstewart
  */
-public class MessageWorker<T> {
+public class MessageWorker { // TODO: This class isn't really necessary since MessagingManager doesn't use a WorkerFactory
 
-    private final RabbitConnector connector;
-    private final MessageHandler<T> handler;
+    private final MessageHandler<?> handler;
+    private final List<Channel> channels;
     private final Map<String,Object> queueArgs;
     private final Route route;
-    public final RabbitReconnector reconnector;
-    private final boolean daemon;
-
-    /**
-     * @param connector
-     * @param handler
-     * @param route
-     * @param daemon
-     */
-    public MessageWorker(RabbitConnector connector, MessageHandler<T> handler, Route route, boolean daemon) {
-        this(connector, handler, null, route, null, daemon);
-    }
 
     /**
      * @param connector
@@ -60,59 +47,23 @@ public class MessageWorker<T> {
      * @param daemon
      */
     public MessageWorker(
-            RabbitConnector connector,
-            MessageHandler<T> handler,
+            MessageHandler<?> handler,
+            List<Channel> channels,
             Map<String,Object> queueArgs,
-            Route route,
-            ReconnectLogger reconnectLogger,
-            boolean daemon
+            Route route
             ) {
 
-        this.connector = connector;
         this.handler = handler;
+        this.channels = ImmutableList.copyOf(channels);
         this.queueArgs = queueArgs;
         this.route = route;
-        this.daemon = daemon;
-
-        ReconnectHandler reconnectHandler = new ReconnectHandler() {
-            @Override
-            public boolean reconnect() throws Exception {
-                start();
-                return true;
-            }
-        };
-
-        int secondsBeforeRetry = 10; // TODO: Parameterize this ???
-        reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, secondsBeforeRetry);
     }
 
-    private volatile Channel channel;
-
-    // TODO: Should this have an inner _start() method that returns a boolean (like in RpcServer) ???
     /**
      * Call this to start consuming & handling messages.
      */
     public void start() throws IOException {
-        int numThreads = 1; // TODO: Parameterize this ??? (will require multiple channels)
-        Connection conn = null;
-        try {
-            conn = daemon ? connector.getDaemonConnection(numThreads) : connector.getConnection(numThreads);
-            channel = conn.createChannel();
-
-            MessageConsumer<T> consumer = new MessageConsumer<T>(handler, channel, queueArgs, route);
-            consumer.start();
-
-            conn.addShutdownListener(reconnector);
-        } catch (IOException e) {
-            RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
-            throw e;
-        } catch (RuntimeException e) {
-            RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
-            throw e;
-        } catch (Error e) {
-            RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
-            throw e;
-        }
+        MessageConsumer.start(handler, channels, queueArgs, route);
     }
 
     // TODO: Get rid of this ???
@@ -121,7 +72,8 @@ public class MessageWorker<T> {
      * @param message
      * @throws IOException
      */
-    public void sendMessage(T message) throws IOException {
+    public void sendMessage(Object message) throws IOException {
+        Channel channel = channels.get(0);
         MessagingUtil.sendMessage(channel, route, message);
     }
 }

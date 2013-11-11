@@ -16,13 +16,15 @@
 
 package com.shopwiki.roger.example;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.type.TypeReference;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.shopwiki.roger.*;
 import com.shopwiki.roger.event.MessageHandler;
-import com.shopwiki.roger.event.MessageWorker;
+import com.shopwiki.roger.event.MessagingManager;
 
 /**
  * Run this main before {@link ExampleEventSender}.
@@ -33,31 +35,40 @@ public class ExampleEventHandler {
 
     public static final Route ROUTE = new Route(ExampleConstants.EXCHANGE, "example-event-routing-key");
 
-    public static void main(String[] args) throws Exception {
+    public static final MessagingManager manager = new MessagingManager(ExampleConstants.CONNECTOR, 1, 10);
 
-        MessageHandler<String> handler = new MessageHandler<String>() {
-            @Override
-            public TypeReference<String> getMessageType() {
-                return new TypeReference<String>() {};
-            }
+    public static volatile String lastMessage = null;
 
-            @Override
-            public void handleMessage(String name) {
-                System.out.println("Hello " + name + "!");
-            }
-        };
-
-        // Create the exchange if it doesn't exist.
-        {
-            Connection conn = ExampleConstants.CONNECTOR.getConnection(1);
-            Channel channel = conn.createChannel();
-            channel.exchangeDeclare(ROUTE.exchange, "topic");
-            conn.close();
+    public static final MessageHandler<String> handler = new MessageHandler<String>() {
+        @Override
+        public TypeReference<String> getMessageType() {
+            return new TypeReference<String>() {};
         }
 
-        boolean daemon = false;
+        @Override
+        public void handleMessage(String name) {
+            lastMessage = "Hello " + name + "!";
+            System.out.println(lastMessage);
+        }
+    };
 
-        MessageWorker<String> worker = new MessageWorker<String>(ExampleConstants.CONNECTOR, handler, ROUTE, daemon);
-        worker.start();
+    /**
+     * Create the exchange if it doesn't exist.
+     */
+    public static void declareExchange() throws IOException {
+        Connection conn = null;
+        try {
+            conn = ExampleConstants.CONNECTOR.getConnection(1);
+            Channel channel = conn.createChannel();
+            channel.exchangeDeclare(ROUTE.exchange, "topic");
+        } finally {
+            RabbitConnector.closeConnection(conn);
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        declareExchange();
+        manager.start();
+        manager.add(handler, ROUTE);
     }
 }

@@ -17,6 +17,7 @@
 package com.shopwiki.roger.event;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.type.TypeReference;
@@ -40,19 +41,26 @@ public class MessageConsumer<T> extends DefaultConsumer {
 
     private final MessageHandler<T> handler;
     private final TypeReference<T> messageType;
-    private final Channel channel;
-    private final Route route;
-    private final String queueName;
 
-    // TODO: Allow this to take multiple Channels, the same way RequestConsumer does ???
-    public MessageConsumer(MessageHandler<T> handler, Channel channel, Map<String,Object> queueArgs, Route route) throws IOException {
+    public static <T> void start(MessageHandler<T> handler, List<Channel> channels, Map<String,Object> queueArgs, Route route) throws IOException {
+        Channel channel0 = channels.get(0);
+        String queuePrefix = routeToQueuePrefix(route);
+        String queueName = QueueUtil.declareAnonymousQueue(channel0, queuePrefix, queueArgs).getQueue();
+
+        if (route != null) {
+            channel0.queueBind(queueName, route.exchange, route.key);
+        }
+
+        for (Channel channel : channels) {
+            MessageConsumer<T> consumer = new MessageConsumer<T>(handler, channel);
+            channel.basicConsume(queueName, true, consumer); // AUTO-ACKING
+        }
+    }
+
+    private MessageConsumer(MessageHandler<T> handler, Channel channel) {
         super(channel);
         this.handler = handler;
         this.messageType = handler.getMessageType();
-        this.channel = channel;
-        this.route = route;
-        String queuePrefix = routeToQueuePrefix(route);
-        this.queueName = QueueUtil.declareAnonymousQueue(channel, queuePrefix, queueArgs).getQueue();
     }
 
     private static String routeToQueuePrefix(Route route) {
@@ -60,18 +68,6 @@ public class MessageConsumer<T> extends DefaultConsumer {
             return route.key;
         }
         return route.exchange + "-" + route.key;
-    }
-
-    public String getQueueName() {
-        return queueName;
-    }
-
-    public void start() throws IOException {
-        if (route != null) {
-            channel.queueBind(queueName, route.exchange, route.key);
-        }
-
-        channel.basicConsume(queueName, true, this);
     }
 
     @Override
