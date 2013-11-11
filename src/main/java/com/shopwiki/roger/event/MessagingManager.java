@@ -69,6 +69,7 @@ public class MessagingManager {
     }
 
     /**
+     * Adds a {@link MessageHandler} with the corresponding {@link Route}.
      * If already started, creates and starts a {@link MessageWorker}.
      *
      * @param handler

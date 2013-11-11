@@ -97,7 +97,7 @@ public class RpcServer {
 
     /**
      * Creates {@link RpcWorker}s using the {@link WorkerFactory} provided to the constructor.
-     * Declares queues & binds routing-keys if a (@link QueueDeclarator} was provided to the constructor.
+     * Declares queues & binds routing-keys if a {@link QueueDeclarator} was provided to the constructor.
      * Starts each {@link RpcWorker}.
      *
      * If this fails for any reason, it will periodically attempt to start in a background thread.
