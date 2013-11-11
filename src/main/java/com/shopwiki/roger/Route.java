@@ -30,4 +30,9 @@ public class Route {
         this.exchange = exchange;
         this.key = key;
     }
+
+    @Override
+    public String toString() {
+        return exchange + "/" + key;
+    }
 }
