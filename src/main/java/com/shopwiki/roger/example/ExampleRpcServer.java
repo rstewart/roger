@@ -49,6 +49,7 @@ public class ExampleRpcServer {
     public static final Route ROUTE = new Route(ExampleConstants.EXCHANGE, "example-rpc-routing-key");
 
     public static final RpcServer createRpcServer() {
+
         RequestHandler<Request, Response> handler = new RequestHandler<Request, Response>() {
             @Override
             public TypeReference<Request> getRequestType() {

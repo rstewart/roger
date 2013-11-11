@@ -19,6 +19,7 @@ package com.shopwiki.roger.rpc;
 import java.io.IOException;
 import java.util.*;
 
+import com.google.common.collect.Lists;
 import com.rabbitmq.client.*;
 import com.shopwiki.roger.RabbitConnector;
 import com.shopwiki.roger.rpc.RpcServer.WorkerFactory;
@@ -51,37 +52,29 @@ public class BasicWorkerFactory implements WorkerFactory {
     }
 
     @Override
-    public RpcWorkers createWorkers(String queuePrefix) throws IOException {
-        Connection conn = null;
-        try {
-            conn = connector.getConnection(numThreads);
+    public Connection createConnection() throws IOException {
+        return connector.getConnection(numThreads);
+    }
 
-            List<Channel> channels = new ArrayList<Channel>();
-            for (int i = 0; i < numThreads; i++) {
-                Channel channel = conn.createChannel();
-                channel.basicQos(1);
-                channels.add(channel);
-            }
+    @Override
+    public List<RpcWorker> createWorkers(Connection conn, String queuePrefix) throws IOException {
 
-            RpcWorkers workers = new RpcWorkers(conn);
+        List<Channel> channels = new ArrayList<Channel>();
 
-            for (String procedureName : nameToHandler.keySet()) {
-                RequestHandler<?,?> handler = nameToHandler.get(procedureName);
-                RpcWorker worker = new RpcWorker(handler, channels, queuePrefix, procedureName);
-                workers.add(worker);
-            }
-
-            return workers;
-            // TODO: Figure out a way to do this Exception handling outside of here ???
-        } catch (IOException e) {
-            RabbitConnector.closeConnection(conn);
-            throw e;
-        } catch (RuntimeException e) {
-            RabbitConnector.closeConnection(conn);
-            throw e;
-        } catch (Error e) {
-            RabbitConnector.closeConnection(conn);
-            throw e;
+        for (int i = 0; i < numThreads; i++) {
+            Channel channel = conn.createChannel();
+            channel.basicQos(1);
+            channels.add(channel);
         }
+
+        List<RpcWorker> workers = Lists.newArrayListWithCapacity(nameToHandler.size());
+
+        for (String procedureName : nameToHandler.keySet()) {
+            RequestHandler<?,?> handler = nameToHandler.get(procedureName);
+            RpcWorker worker = new RpcWorker(handler, channels, queuePrefix, procedureName);
+            workers.add(worker);
+        }
+
+        return workers;
     }
 }

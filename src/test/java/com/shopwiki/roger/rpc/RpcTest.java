@@ -34,6 +34,8 @@ public class RpcTest {
         server.start();
 
         RpcResponse<Response> response = ExampleRpcClient.sendRequest("Robert");
+        server.stop();
+
         Assert.assertEquals(ResponseStatus.OK, response.getStatus());
         Assert.assertEquals("Hello Robert!", response.getBody().greeting);
     }

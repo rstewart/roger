@@ -17,6 +17,7 @@
 package com.shopwiki.roger.rpc;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import com.rabbitmq.client.*;
@@ -40,7 +41,8 @@ public class RpcServer {
      * desire more control over how {@link Channel}s are allocated to {@link RpcWorker}s.
      */
     public interface WorkerFactory {
-        RpcWorkers createWorkers(String queuePrefix) throws IOException;
+        Connection createConnection() throws IOException;
+        List<RpcWorker> createWorkers(Connection conn, String queuePrefix) throws IOException;
     }
 
     // TODO: Rename this QueueManager ???
@@ -89,7 +91,8 @@ public class RpcServer {
             }
         };
 
-        reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, 1); // TODO: Make this configurable ???
+        int secondsBeforeReconnect = 1; // TODO: Make this configurable ???
+        reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, secondsBeforeReconnect);
     }
 
     /**
@@ -105,11 +108,15 @@ public class RpcServer {
         }
     }
 
+    private volatile Connection conn = null;
+
     private boolean _start() {
-        Connection conn = null;
         try {
-            RpcWorkers workers = workerFactory.createWorkers(queuePrefix);
-            conn = workers.getConnection();
+            System.out.print(TimeUtil.now() + " Starting RpcServer: ");
+            conn = workerFactory.createConnection();
+            List<RpcWorker> workers = workerFactory.createWorkers(conn, queuePrefix);
+            System.out.println(conn + " with " + workers.size() + " workers.");
+
             Channel channel = conn.createChannel();
 
             if (queueDeclarator != null) {
@@ -123,18 +130,25 @@ public class RpcServer {
                 worker.setPostProcessors(postProcessors);
                 String queueName = worker.getQueueName();
 
-                System.out.println(channel + " - Starting Worker for queue: " + queueName);
+                System.out.println("\t" + "Starting RpcWorker for queue: " + queueName);
                 channel.queueDeclarePassive(queueName); // make sure the handler's queue exists
                 worker.start();
             }
 
+            channel.close();
             conn.addShutdownListener(reconnector);
             return true;
         } catch (Throwable t) {
             System.err.println(TimeUtil.now() + " ERROR starting RpcServer:");
             t.printStackTrace();
-            RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
+            stop();
             return false;
         }
+    }
+
+    public void stop() {
+        System.out.println(TimeUtil.now() + " Stopping RpcServer: " + conn);
+        RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
+        conn = null;
     }
 }
