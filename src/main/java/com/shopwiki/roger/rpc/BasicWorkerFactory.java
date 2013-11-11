@@ -53,7 +53,7 @@ public class BasicWorkerFactory implements WorkerFactory {
 
     @Override
     public Connection createConnection() throws IOException {
-        return connector.newConnection(numThreads);
+        return connector.newConnection(numThreads); // non-daemon
     }
 
     @Override
