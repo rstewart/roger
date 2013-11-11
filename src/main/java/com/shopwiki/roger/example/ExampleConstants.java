@@ -24,15 +24,7 @@ import com.shopwiki.roger.RabbitConnector;
  */
 public class ExampleConstants {
 
-    //private static final Address ADDRESS = new Address("localhost");
-
-    public static final Address ADDRESS = new Address("rabbitmq.ny.shopwiki.com");
-    //private static final Address ADDRESS = new Address("ny187.shopwiki.com");
-    //private static final Address ADDRESS = new Address("ny197.shopwiki.com");
-
-    //private static final Address ADDRESS = new Address("rabbit-test.ny.shopwiki.com");
-    //private static final Address ADDRESS = new Address("ny188.shopwiki.com");
-    //private static final Address ADDRESS = new Address("ny194.shopwiki.com");
+    private static final Address ADDRESS = new Address("localhost");
 
     public static final RabbitConnector CONNECTOR = new RabbitConnector(ADDRESS);
 
