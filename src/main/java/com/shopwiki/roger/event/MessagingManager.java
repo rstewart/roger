@@ -68,6 +68,13 @@ public class MessagingManager {
         reconnector = new RabbitReconnector(reconnectHandler, reconnectLogger, secondsBeforeReconnect);
     }
 
+    /**
+     * If already started, creates and starts a {@link MessageWorker}.
+     *
+     * @param handler
+     * @param route
+     * @throws IOException
+     */
     public synchronized void add(MessageHandler<?> handler, Route route) throws IOException {
         handlerToRoute.put(handler, route);
         if (channels != null) {
@@ -81,6 +88,12 @@ public class MessagingManager {
         worker.start();
     }
 
+    /**
+     * Creates {@link MessageWorker}s.
+     * Starts each {@link MessageWorker} (declares queues & binds routing-keys).
+     *
+     * If this fails for any reason, it will periodically attempt to start in a background thread.
+     */
     public void start() {
         if (_start() == false) {
             Executors.newSingleThreadExecutor().execute(reconnector);
@@ -119,6 +132,9 @@ public class MessagingManager {
         return ImmutableList.copyOf(channels);
     }
 
+    /**
+     * Closes the connection to RabbitMQ and prevents further automatic restarts.
+     */
     public void stop() {
         System.out.println(TimeUtil.now() + " Stopping MessagingManager: " + conn);
         RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);

@@ -96,11 +96,11 @@ public class RpcServer {
     }
 
     /**
-     * 1. Creates {@link RpcWorker}s using the {@link WorkerFactory} provided to the constructor.
-     * 2. Declares queues & binds routing-keys if a (@link QueueDeclarator} was provided to the constructor.
-     * 3. Starts each {@link RpcWorker}.
+     * Creates {@link RpcWorker}s using the {@link WorkerFactory} provided to the constructor.
+     * Declares queues & binds routing-keys if a (@link QueueDeclarator} was provided to the constructor.
+     * Starts each {@link RpcWorker}.
      *
-     * @throws IOException
+     * If this fails for any reason, it will periodically attempt to start in a background thread.
      */
     public void start() {
         if (_start() == false) {
@@ -146,6 +146,9 @@ public class RpcServer {
         }
     }
 
+    /**
+     * Closes the connection to RabbitMQ and prevents further automatic restarts.
+     */
     public void stop() {
         System.out.println(TimeUtil.now() + " Stopping RpcServer: " + conn);
         RabbitConnector.closeConnectionAndRemoveReconnector(conn, reconnector);
