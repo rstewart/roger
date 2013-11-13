@@ -41,6 +41,8 @@ import com.shopwiki.roger.util.TimeUtil;
  */
 public class MessagingManager {
 
+    public static final boolean DEBUG = Boolean.getBoolean("ROGER.EVENT.DEBUG");
+
     private final RabbitConnector connector;
     private final int numThreads;
     private final RabbitReconnector reconnector;
@@ -85,7 +87,7 @@ public class MessagingManager {
 
     private void startWorker(MessageHandler<?> handler, Route route) throws IOException {
         MessageWorker worker = new MessageWorker(handler, channels, queueArgs, route);
-        System.out.println("\t" + "Starting MessageWorker for route: " + route);
+        if (DEBUG) { System.out.println(TimeUtil.now() + " Starting MessageWorker for route: " + route); }
         worker.start();
     }
 
@@ -103,10 +105,10 @@ public class MessagingManager {
 
     private synchronized boolean _start() {
         try {
-            System.out.print(TimeUtil.now() + " Starting MessagingManager: ");
+            if (DEBUG) { System.out.print(TimeUtil.now() + " Starting MessagingManager: "); }
             conn = connector.newDaemonConnection(numThreads); // TODO: Should have the option for non-daemon ???
             channels = createChannels(conn, numThreads);
-            System.out.println(conn + " with " + channels.size() + " channels.");
+            if (DEBUG) { System.out.println(conn + " with " + channels.size() + " channels."); }
 
             for (MessageHandler<?> handler : handlerToRoute.keySet()) {
                 Route route = handlerToRoute.get(handler);
