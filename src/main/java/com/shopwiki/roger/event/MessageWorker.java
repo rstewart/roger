@@ -27,7 +27,8 @@ import com.shopwiki.roger.Route;
 
 /**
  * A glue class that packages together a {@link MessageHandler} and the RabbitMQ plumbing needed to use it.
- * The user is expected to instantiate one of these and call the {@link #start()} method to begin handling messages.
+ * The user may instantiate one of these and call the {@link #start()} method to begin handling messages,
+ * or use a {@link MessagingManager} to do it for them.
  *
  * @author rstewart
  */
