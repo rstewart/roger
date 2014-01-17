@@ -35,7 +35,7 @@ import com.shopwiki.roger.Route;
  *
  * @author rstewart
  */
-public class MessageConsumer<T> extends DefaultConsumer {
+class MessageConsumer<T> extends DefaultConsumer {
 
     private static final boolean DEBUG = MessagingUtil.DEBUG;
 

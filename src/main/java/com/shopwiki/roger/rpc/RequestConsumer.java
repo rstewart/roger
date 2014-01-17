@@ -35,7 +35,7 @@ import com.shopwiki.roger.MessagingUtil;
  *
  * @param <I> request type (I is for input).
  */
-public class RequestConsumer<I> extends DefaultConsumer {
+class RequestConsumer<I> extends DefaultConsumer {
 
     private static final boolean DEBUG = MessagingUtil.DEBUG;
 
