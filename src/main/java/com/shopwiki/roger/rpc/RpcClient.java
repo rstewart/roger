@@ -28,7 +28,7 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.shopwiki.roger.*;
 
 /**
- * Mainly for testing a {@link RpcServer}s.
+ * Mainly for testing {@link RpcServer}s.
  *
  * @param <O> response type
  *
