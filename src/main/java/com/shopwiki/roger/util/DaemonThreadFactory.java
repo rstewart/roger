@@ -26,6 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class DaemonThreadFactory {
 
+    /* Can't instantiate. Just static methods. */
+    private DaemonThreadFactory() { }
+
     private static final ThreadFactory INSTANCE = new ThreadFactory() {
         @Override
 		public Thread newThread(Runnable r) {

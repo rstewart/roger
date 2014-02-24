@@ -28,6 +28,9 @@ import java.util.TimeZone;
  */
 public class TimeUtil {
 
+	/* Can't instantiate. Just static methods. */
+	private TimeUtil() { }
+
 	private static final TimeZone NY_TIMEZONE = TimeZone.getTimeZone("America/New_York");
 
 	private static final ThreadLocal<DateFormat> _dateFormat = new ThreadLocal<DateFormat>() {
