@@ -7,8 +7,8 @@
   <version>0.0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>roger</name>
-  <url>https://github.com/shopwiki/roger</url>
+  <name>Roger</name>
+  <url>https://github.com/rstewart/roger</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -56,4 +56,5 @@
     <testOutputDirectory>${basedir}/target/test-classes</testOutputDirectory>
   </build>
 
+  <description>Java messaging framework using RabbitMQ &amp; Jackson.</description>
 </project>
