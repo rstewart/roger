@@ -35,11 +35,11 @@ public class ExampleEventHandler {
 
     public static final Route ROUTE = new Route(ExampleConstants.EXCHANGE, "example-event-routing-key");
 
-    public static final MessagingManager manager = new MessagingManager(ExampleConstants.CONNECTOR, 1, 10);
+    public final MessagingManager manager = new MessagingManager(ExampleConstants.CONNECTOR, 1, 10);
 
-    public static volatile String lastMessage = null;
+    public volatile String lastMessage = null;
 
-    public static final MessageHandler<String> handler = new MessageHandler<String>() {
+    public final MessageHandler<String> handler = new MessageHandler<String>() {
         @Override
         public TypeReference<String> getMessageType() {
             return new TypeReference<String>() {};
@@ -68,7 +68,8 @@ public class ExampleEventHandler {
 
     public static void main(String[] args) throws Exception {
         declareExchange();
-        manager.start();
-        manager.add(handler, ROUTE);
+        ExampleEventHandler example = new ExampleEventHandler();
+        example.manager.start();
+        example.manager.add(example.handler, ROUTE);
     }
 }

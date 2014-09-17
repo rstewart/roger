@@ -13,23 +13,26 @@ public class EventTest {
     @Test
     public void test1() throws Exception { // add handler then start
         ExampleEventHandler.declareExchange();
-        ExampleEventHandler.manager.add(ExampleEventHandler.handler, ExampleEventHandler.ROUTE);
-        ExampleEventHandler.manager.start();
-        assertEvent();
-        ExampleEventHandler.manager.stop();
+        ExampleEventHandler example = new ExampleEventHandler();
+        example.manager.add(example.handler, ExampleEventHandler.ROUTE);
+        example.manager.start();
+        assertEvent(example);
+        example.manager.stop();
     }
 
     @Test
     public void test2() throws Exception { // start then add handler
         ExampleEventHandler.declareExchange();
-        ExampleEventHandler.manager.start();
-        ExampleEventHandler.manager.add(ExampleEventHandler.handler, ExampleEventHandler.ROUTE);
-        assertEvent();
-        ExampleEventHandler.manager.stop();
+        ExampleEventHandler example = new ExampleEventHandler();
+        example.manager.start();
+        example.manager.add(example.handler, ExampleEventHandler.ROUTE);
+        assertEvent(example);
+        example.manager.stop();
     }
 
-    private static void assertEvent() throws IOException {
+    private static void assertEvent(ExampleEventHandler example) throws IOException, InterruptedException {
         ExampleEventSender.sendEvent();
-        Assert.assertEquals("Hello Robert!", ExampleEventHandler.lastMessage);        
+        Thread.sleep(1000);
+        Assert.assertEquals("Hello Robert!", example.lastMessage);
     }
 }
