@@ -35,13 +35,27 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
     private static final boolean DEBUG = MessagingUtil.DEBUG;
 
     private final List<Address> addresses;
+    
+    private final String username;
+    
+    private final String password;
 
     public RabbitConnector(Address address) {
-        this(Arrays.asList(address));
+        this(address, "guest", "guest");
+    }
+    
+    public RabbitConnector(Address address, String username, String password) {
+        this(Arrays.asList(address), username, password);
     }
 
     public RabbitConnector(List<Address> addresses) {
+        this(addresses, "guest", "guest");
+    }
+    
+    public RabbitConnector(List<Address> addresses, String username, String password) {
         this.addresses = ImmutableList.copyOf(addresses);
+        this.username = username;
+        this.password = password;
     }
 
     private class ConnectDaemon extends Thread {
@@ -105,6 +119,8 @@ public class RabbitConnector { // I would have named this ConnectionFactory, but
 
     private Connection _newConnection(int numThreads) throws IOException {
         ConnectionFactory connFactory = new ConnectionFactory();
+        connFactory.setUsername(this.username);
+        connFactory.setPassword(this.password);
         ThreadFactory threadFactory = DaemonThreadFactory.getInstance("RabbitMQ-ConsumerThread", true);
         final ExecutorService executor = Executors.newFixedThreadPool(numThreads, threadFactory);
         Address[] array = addresses.toArray(new Address[0]);
